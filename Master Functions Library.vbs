@@ -58,6 +58,16 @@ CLS_x1_number = "X102CLS"
 'Creates a double array of county offices, first by office (using the ~), then by address line (using the |). Dynamically added with the installer.
 county_office_array = split("2100 3rd Ave Suite 400|Anoka, MN 55303~1201 89th Ave NE Suite 400|Blaine, MN 55434~3980 Central Ave NE|Columbia Heights, MN 55421~4175 Lovell RD NE|Lexington, MN 55014", "~")
 
+'This is a variable which signifies the agency is beta (affects script URL)
+beta_agency = True
+
+'This is the URL of our script repository, and should only change if the agency is beta or standard.
+If beta_agency = True then
+	script_repository = "https://raw.githubusercontent.com/MN-Script-Team/DHS-MAXIS-Scripts/beta/Script Files/"
+Else
+	script_repository = "https://raw.githubusercontent.com/MN-Script-Team/DHS-MAXIS-Scripts/master/Script Files/"
+End if
+
 'GLOBAL CONSTANTS----------------------------------------------------------------------------------------------------
 checked = 1			'Value for checked boxes
 unchecked = 0		'Value for unchecked boxes
