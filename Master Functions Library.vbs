@@ -1889,6 +1889,16 @@ function run_another_script(script_path)
   Execute text_from_the_other_script
 end function
 
+FUNCTION run_from_GitHub(url)
+	Set req = CreateObject("Msxml2.XMLHttp.6.0")				'Creates an object to get a URL
+	req.open "GET", url, False									'Attempts to open the URL
+	req.send													'Sends request
+	If req.Status = 200 Then									'200 means great success
+		Set fso = CreateObject("Scripting.FileSystemObject")	'Creates an FSO
+		Execute req.responseText								'Executes the script code
+	End If
+END FUNCTION
+
 function script_end_procedure(closing_message)
 	If closing_message <> "" then MsgBox closing_message
 	stop_time = timer
