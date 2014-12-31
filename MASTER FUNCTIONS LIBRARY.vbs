@@ -2253,16 +2253,13 @@ Function PIC_paystubs_info_adder(pay_date, gross_amt, hours)
 End function
 
 Function prospective_averager(pay_date, gross_amt, hours) 'Creates variables for total_prospective_pay and total_prospective_hours
-	'If these variables don't exist, it creates them
-	If total_prospective_pay = "" then total_prospective_pay = 0
-	If total_prospective_hours = "" then total_prospective_hours = 0
-	If isdate(pay_date) = True then
-		total_prospective_pay = total_prospective_pay + abs(gross_amt)
-		total_prospective_hours = total_prospective_hours + abs(hours)
-		paystubs_received = paystubs_received + 1
-	Else
-		pay_date = "01/01/2000"
-	End if
+  If isdate(pay_date) = True then
+    total_prospective_pay = total_prospective_pay + abs(gross_amt)
+    total_prospective_hours = total_prospective_hours + abs(hours)
+    paystubs_received = paystubs_received + 1
+  Else
+    pay_date = "01/01/2000"
+  End if
 End function
 
 Function prospective_pay_analyzer(pay_date, gross_amt)
