@@ -96,58 +96,59 @@ Function add_ACCT_to_variable(x) 'x represents the name of the variable (example
 End function
 
 Function add_BUSI_to_variable(x) 'x represents the name of the variable (example: assets vs. spousal_assets)
-  EMReadScreen BUSI_type, 2, 5, 37
-  If BUSI_type = "01" then BUSI_type = "Farming"
-  If BUSI_type = "02" then BUSI_type = "Real Estate"
-  If BUSI_type = "03" then BUSI_type = "Home Product Sales"
-  If BUSI_type = "04" then BUSI_type = "Other Sales"
-  If BUSI_type = "05" then BUSI_type = "Personal Services"
-  If BUSI_type = "06" then BUSI_type = "Paper Route"
-  If BUSI_type = "07" then BUSI_type = "InHome Daycare"
-  If BUSI_type = "08" then BUSI_type = "Rental Income"
-  If BUSI_type = "09" then BUSI_type = "Other"
-  EMWriteScreen "x", 7, 26
-  EMSendKey "<enter>"
-  EMWaitReady 0, 0
-  If cash_check = 1 then
-    EMReadScreen BUSI_ver, 1, 9, 73
-  ElseIf HC_check = 1 then 
-    EMReadScreen BUSI_ver, 1, 12, 73
-    If BUSI_ver = "_" then EMReadScreen BUSI_ver, 1, 13, 73
-  ElseIf SNAP_check = 1 then
-    EMReadScreen BUSI_ver, 1, 11, 73
-  End if
-  EMSendKey "<PF3>"
-  EMWaitReady 0, 0
-  If SNAP_check = 1 then
-    EMReadScreen BUSI_amt, 8, 11, 68
-    BUSI_amt = trim(BUSI_amt)
-  ElseIf cash_check = 1 then 
-    EMReadScreen BUSI_amt, 8, 9, 54
-    BUSI_amt = trim(BUSI_amt)
-  ElseIf HC_check = 1 then 
-    EMWriteScreen "x", 17, 29
-    EMSendKey "<enter>"
-    EMWaitReady 0, 0
-    EMReadScreen BUSI_amt, 8, 15, 54
-    If BUSI_amt = "    0.00" then EMReadScreen BUSI_amt, 8, 16, 54
-    BUSI_amt = trim(BUSI_amt)
-    EMSendKey "<PF3>"
-    EMWaitReady 0, 0
-  End if
-  x = x & trim(BUSI_type) & " BUSI"
-  EMReadScreen BUSI_income_end_date, 8, 5, 71
-  If BUSI_income_end_date <> "__ __ __" then BUSI_income_end_date = replace(BUSI_income_end_date, " ", "/")
-  If IsDate(BUSI_income_end_date) = True then
-    x = x & " (ended " & BUSI_income_end_date & ")"
-  Else
-    If BUSI_amt <> "" then x = x & ", ($" & BUSI_amt & "/monthly)"
-  End if
-  If BUSI_ver = "N" or BUSI_ver = "?" then 
-    x = x & ", no proof provided.; "
-  Else
-    x = x & ".; "
-  End if
+'  EMReadScreen BUSI_type, 2, 5, 37
+'  If BUSI_type = "01" then BUSI_type = "Farming"
+'  If BUSI_type = "02" then BUSI_type = "Real Estate"
+'  If BUSI_type = "03" then BUSI_type = "Home Product Sales"
+'  If BUSI_type = "04" then BUSI_type = "Other Sales"
+'  If BUSI_type = "05" then BUSI_type = "Personal Services"
+'  If BUSI_type = "06" then BUSI_type = "Paper Route"
+'  If BUSI_type = "07" then BUSI_type = "InHome Daycare"
+'  If BUSI_type = "08" then BUSI_type = "Rental Income"
+'  If BUSI_type = "09" then BUSI_type = "Other"
+'  EMWriteScreen "x", 7, 26
+'  EMSendKey "<enter>"
+'  EMWaitReady 0, 0
+'  If cash_check = 1 then
+'    EMReadScreen BUSI_ver, 1, 9, 73
+'  ElseIf HC_check = 1 then 
+'    EMReadScreen BUSI_ver, 1, 12, 73
+'    If BUSI_ver = "_" then EMReadScreen BUSI_ver, 1, 13, 73
+'  ElseIf SNAP_check = 1 then
+'    EMReadScreen BUSI_ver, 1, 11, 73
+'  End if
+'  EMSendKey "<PF3>"
+'  EMWaitReady 0, 0
+'  If SNAP_check = 1 then
+'    EMReadScreen BUSI_amt, 8, 11, 68
+'    BUSI_amt = trim(BUSI_amt)
+'  ElseIf cash_check = 1 then 
+'    EMReadScreen BUSI_amt, 8, 9, 54
+'    BUSI_amt = trim(BUSI_amt)
+'  ElseIf HC_check = 1 then 
+'    EMWriteScreen "x", 17, 29
+'    EMSendKey "<enter>"
+'    EMWaitReady 0, 0
+'    EMReadScreen BUSI_amt, 8, 15, 54
+'    If BUSI_amt = "    0.00" then EMReadScreen BUSI_amt, 8, 16, 54
+'    BUSI_amt = trim(BUSI_amt)
+'    EMSendKey "<PF3>"
+'    EMWaitReady 0, 0
+'  End if
+'  x = x & trim(BUSI_type) & " BUSI"
+'  EMReadScreen BUSI_income_end_date, 8, 5, 71
+'  If BUSI_income_end_date <> "__ __ __" then BUSI_income_end_date = replace(BUSI_income_end_date, " ", "/")
+'  If IsDate(BUSI_income_end_date) = True then
+'    x = x & " (ended " & BUSI_income_end_date & ")"
+'  Else
+'    If BUSI_amt <> "" then x = x & ", ($" & BUSI_amt & "/monthly)"
+'  End if
+'  If BUSI_ver = "N" or BUSI_ver = "?" then 
+'    x = x & ", no proof provided.; "
+'  Else
+'    x = x & ".; "
+'  End if
+	MsgBox "BUSI was found on this case. On 01/05/2015, BUSI autofill was temporarily disabled so that system changes can be worked into the script. Please update BUSI section of case note manually at this time."
 End function
 
 Function add_CARS_to_variable(x) 'x represents the name of the variable (example: assets vs. spousal_assets)
@@ -2230,3 +2231,4 @@ FUNCTION write_TIKL_function(tikl_text)
 	IF tikl_line_five <> "" THEN EMWriteScreen tikl_line_five, 13, 3
 	transmit
 END FUNCTION
+
