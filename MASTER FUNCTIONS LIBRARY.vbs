@@ -228,7 +228,9 @@ Function add_CARS_to_variable(x) 'x represents the name of the variable (example
   new_CARS_type = ""
 End function
 
-Function add_JOBS_to_variable(x) 'x represents the name of the variable (example: assets vs. spousal_assets)
+Function add_JOBS_to_variable(variable_name_for_JOBS) 'x represents the name of the variable (example: assets vs. spousal_assets)
+  EMReadScreen JOBS_month, 5, 20, 55
+  JOBS_month = replace(JOBS_month, " ", "/")
   EMReadScreen JOBS_type, 30, 7, 42
   JOBS_type = replace(JOBS_type, "_", ""	)
   JOBS_type = trim(JOBS_type)
@@ -240,53 +242,52 @@ Function add_JOBS_to_variable(x) 'x represents the name of the variable (example
       new_JOBS_type = new_JOBS_type & b & c & " "
     End if
   Next
-  If SNAP_check = 1 then
+' Navigates to the FS PIC
     EMWriteScreen "x", 19, 38
-    EMSendKey "<enter>"
-    EMWaitReady 0, 0
+    transmit
     EMReadScreen SNAP_JOBS_amt, 8, 17, 56
     SNAP_JOBS_amt = trim(SNAP_JOBS_amt)
-    EMReadScreen pay_frequency, 1, 5, 64
-    EMSendKey "<enter>"
-    EMWaitReady 0, 0
-  ElseIf cash_check = 1 then
+    EMReadScreen snap_pay_frequency, 1, 5, 64
+	EMReadScreen date_of_pic_calc, 8, 5, 34
+	date_of_pic_calc = replace(date_of_pic_calc, " ", "/")
+    transmit
+'  Reads the information on the retro side of JOBS
     EMReadScreen retro_JOBS_amt, 8, 17, 38
     retro_JOBS_amt = trim(retro_JOBS_amt)
-  ElseIf HC_check = 1 then 
+'  Reads the information on the prospective side of JOBS
+	EMReadScreen prospective_JOBS_amt, 8, 17, 67
+	prospective_JOBS_amt = trim(prospective_JOBS_amt)
+'  Reads the information about health care off of HC Income Estimator 
     EMReadScreen pay_frequency, 1, 18, 35
     EMWriteScreen "x", 19, 54
-    EMSendKey "<enter>"
-    EMWaitReady 0, 0
+    transmit
     EMReadScreen HC_JOBS_amt, 8, 11, 63
     HC_JOBS_amt = trim(HC_JOBS_amt)
-    EMSendKey "<enter>"
-    EMWaitReady 0, 0
-  End If
+    transmit
+  
   EMReadScreen JOBS_ver, 1, 6, 38
   EMReadScreen JOBS_income_end_date, 8, 9, 49
   If JOBS_income_end_date <> "__ __ __" then JOBS_income_end_date = replace(JOBS_income_end_date, " ", "/")
   If IsDate(JOBS_income_end_date) = True then
-    x = x & new_JOBS_type & "(ended " & JOBS_income_end_date
+    variable_name_for_JOBS = variable_name_for_JOBS & new_JOBS_type & "(ended " & JOBS_income_end_date & "); "
   Else
     If pay_frequency = "1" then pay_frequency = "monthly"
     If pay_frequency = "2" then pay_frequency = "semimonthly"
     If pay_frequency = "3" then pay_frequency = "biweekly"
     If pay_frequency = "4" then pay_frequency = "weekly"
     If pay_frequency = "_" or pay_frequency = "5" then pay_frequency = "non-monthly"
-    x = x & "EI from " & trim(new_JOBS_type)
-    If SNAP_check = 1 then
-      x = x & ", ($" & SNAP_JOBS_amt & "/" & pay_frequency
-    ElseIf cash_check = 1 then
-      x = x & ", ($" & retro_JOBS_amt & " budgeted"
-    ElseIf HC_check = 1 then 
-      x = x & ", ($" & HC_JOBS_amt & "/" & pay_frequency 
-    End if
-  End if
-  If JOBS_ver = "N" or JOBS_ver = "?" then
-    x = x & ", no proof provided).; "
-  Else
-    x = x & ").; "
-  End if
+	IF snap_pay_frequency = "1" THEN snap_pay_frequency = "monthly"
+	IF snap_pay_frequency = "2" THEN snap_pay_frequency = "semimonthly"
+	IF snap_pay_frequency = "3" THEN snap_pay_frequency = "biweekly"
+	IF snap_pay_frequency = "4" THEN snap_pay_frequency = "weekly"
+	IF snap_pay_frequency = "5" THEN snap_pay_frequency = "non-monthly"
+    variable_name_for_JOBS = variable_name_for_JOBS & "EI from " & trim(new_JOBS_type) & ", " & JOBS_month  & " amts:; "
+    If SNAP_JOBS_amt <> "" then variable_name_for_JOBS = variable_name_for_JOBS & "- PIC: $" & SNAP_JOBS_amt & "/" & snap_pay_frequency & ", calculated " & date_of_pic_calc & "; "
+    If retro_JOBS_amt <> "" then variable_name_for_JOBS = variable_name_for_JOBS & "- Retrospective: $" & retro_JOBS_amt & " total; "
+	IF prospective_JOBS_amt <> "" THEN variable_name_for_JOBS = variable_name_for_JOBS & "- Prospective: $" & prospective_JOBS_amt & " total; "
+	IF HC_JOBS_amt <> "________" THEN variable_name_for_JOBS = variable_name_for_JOBS & "- HC Inc Est: $" & HC_JOBS_amt & "/" & pay_frequency & "; "
+   End if
+  If JOBS_ver = "N" or JOBS_ver = "?" then variable_name_for_JOBS = variable_name_for_JOBS & ", no proof provided).; "
 End function
 
 Function add_OTHR_to_variable(x) 'x represents the name of the variable (example: assets vs. spousal_assets)
