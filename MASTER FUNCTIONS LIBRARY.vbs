@@ -11,7 +11,7 @@
 'Here's the code to add (remove comments before using):
 '
 'LOADING ROUTINE FUNCTIONS---------------------------------------------------------------
-'url = "https://raw.githubusercontent.com/MN-Script-Team/BZS-FuncLib/master/Master Functions Library.vbs"
+'url = "https://raw.githubusercontent.com/MN-Script-Team/BZS-FuncLib/master/MASTER FUNCTIONS LIBRARY.vbs"
 'SET req = CreateObject("Msxml2.XMLHttp.6.0")				'Creates an object to get a URL
 'req.open "GET", url, FALSE									'Attempts to open the URL
 'req.send													'Sends request
@@ -95,60 +95,115 @@ Function add_ACCT_to_variable(x) 'x represents the name of the variable (example
   new_ACCT_location = ""
 End function
 
-Function add_BUSI_to_variable(x) 'x represents the name of the variable (example: assets vs. spousal_assets)
-'  EMReadScreen BUSI_type, 2, 5, 37
-'  If BUSI_type = "01" then BUSI_type = "Farming"
-'  If BUSI_type = "02" then BUSI_type = "Real Estate"
-'  If BUSI_type = "03" then BUSI_type = "Home Product Sales"
-'  If BUSI_type = "04" then BUSI_type = "Other Sales"
-'  If BUSI_type = "05" then BUSI_type = "Personal Services"
-'  If BUSI_type = "06" then BUSI_type = "Paper Route"
-'  If BUSI_type = "07" then BUSI_type = "InHome Daycare"
-'  If BUSI_type = "08" then BUSI_type = "Rental Income"
-'  If BUSI_type = "09" then BUSI_type = "Other"
-'  EMWriteScreen "x", 7, 26
-'  EMSendKey "<enter>"
-'  EMWaitReady 0, 0
-'  If cash_check = 1 then
-'    EMReadScreen BUSI_ver, 1, 9, 73
-'  ElseIf HC_check = 1 then 
-'    EMReadScreen BUSI_ver, 1, 12, 73
-'    If BUSI_ver = "_" then EMReadScreen BUSI_ver, 1, 13, 73
-'  ElseIf SNAP_check = 1 then
-'    EMReadScreen BUSI_ver, 1, 11, 73
-'  End if
-'  EMSendKey "<PF3>"
-'  EMWaitReady 0, 0
-'  If SNAP_check = 1 then
-'    EMReadScreen BUSI_amt, 8, 11, 68
-'    BUSI_amt = trim(BUSI_amt)
-'  ElseIf cash_check = 1 then 
-'    EMReadScreen BUSI_amt, 8, 9, 54
-'    BUSI_amt = trim(BUSI_amt)
-'  ElseIf HC_check = 1 then 
-'    EMWriteScreen "x", 17, 29
-'    EMSendKey "<enter>"
-'    EMWaitReady 0, 0
-'    EMReadScreen BUSI_amt, 8, 15, 54
-'    If BUSI_amt = "    0.00" then EMReadScreen BUSI_amt, 8, 16, 54
-'    BUSI_amt = trim(BUSI_amt)
-'    EMSendKey "<PF3>"
-'    EMWaitReady 0, 0
-'  End if
-'  x = x & trim(BUSI_type) & " BUSI"
-'  EMReadScreen BUSI_income_end_date, 8, 5, 71
-'  If BUSI_income_end_date <> "__ __ __" then BUSI_income_end_date = replace(BUSI_income_end_date, " ", "/")
-'  If IsDate(BUSI_income_end_date) = True then
-'    x = x & " (ended " & BUSI_income_end_date & ")"
-'  Else
-'    If BUSI_amt <> "" then x = x & ", ($" & BUSI_amt & "/monthly)"
-'  End if
-'  If BUSI_ver = "N" or BUSI_ver = "?" then 
-'    x = x & ", no proof provided.; "
-'  Else
-'    x = x & ".; "
-'  End if
-	MsgBox "BUSI was found on this case. On 01/05/2015, BUSI autofill was temporarily disabled so that system changes can be worked into the script. Please update BUSI section of case note manually at this time."
+Function add_BUSI_to_variable(variable_name_for_BUSI) 'x represents the name of the variable (example: assets vs. spousal_assets)
+	'Reading the footer month, converting to an actual date, we'll need this for determining if the panel is 02/15 or later (there was a change in 02/15 which moved stuff)
+	EMReadScreen BUSI_footer_month, 5, 20, 55
+	BUSI_footer_month = replace(BUSI_footer_month, " ", "/01/")
+	
+	'Treats panels older than 02/15 with the old logic, because the panel was changed in 02/15. We'll remove this in August if all goes well.
+	If datediff("d", "02/01/2015", BUSI_footer_month) < 0 then 
+		EMReadScreen BUSI_type, 2, 5, 37
+		If BUSI_type = "01" then BUSI_type = "Farming"
+		If BUSI_type = "02" then BUSI_type = "Real Estate"
+		If BUSI_type = "03" then BUSI_type = "Home Product Sales"
+		If BUSI_type = "04" then BUSI_type = "Other Sales"
+		If BUSI_type = "05" then BUSI_type = "Personal Services"
+		If BUSI_type = "06" then BUSI_type = "Paper Route"
+		If BUSI_type = "07" then BUSI_type = "InHome Daycare"
+		If BUSI_type = "08" then BUSI_type = "Rental Income"
+		If BUSI_type = "09" then BUSI_type = "Other"
+		EMWriteScreen "x", 7, 26
+		EMSendKey "<enter>"
+		EMWaitReady 0, 0
+		If cash_check = 1 then
+			EMReadScreen BUSI_ver, 1, 9, 73
+		ElseIf HC_check = 1 then 
+			EMReadScreen BUSI_ver, 1, 12, 73
+			If BUSI_ver = "_" then EMReadScreen BUSI_ver, 1, 13, 73
+		ElseIf SNAP_check = 1 then
+			EMReadScreen BUSI_ver, 1, 11, 73
+		End if
+		EMSendKey "<PF3>"
+		EMWaitReady 0, 0
+		If SNAP_check = 1 then
+			EMReadScreen BUSI_amt, 8, 11, 68
+			BUSI_amt = trim(BUSI_amt)
+		ElseIf cash_check = 1 then 
+			EMReadScreen BUSI_amt, 8, 9, 54
+			BUSI_amt = trim(BUSI_amt)
+		ElseIf HC_check = 1 then 
+			EMWriteScreen "x", 17, 29
+			EMSendKey "<enter>"
+			EMWaitReady 0, 0
+			EMReadScreen BUSI_amt, 8, 15, 54
+			If BUSI_amt = "    0.00" then EMReadScreen BUSI_amt, 8, 16, 54
+			BUSI_amt = trim(BUSI_amt)
+			EMSendKey "<PF3>"
+			EMWaitReady 0, 0
+		End if
+		variable_name_for_BUSI = variable_name_for_BUSI & trim(BUSI_type) & " BUSI"
+		EMReadScreen BUSI_income_end_date, 8, 5, 71
+		If BUSI_income_end_date <> "__ __ __" then BUSI_income_end_date = replace(BUSI_income_end_date, " ", "/")
+		If IsDate(BUSI_income_end_date) = True then
+			variable_name_for_BUSI = variable_name_for_BUSI & " (ended " & BUSI_income_end_date & ")"
+		Else
+			If BUSI_amt <> "" then variable_name_for_BUSI = variable_name_for_BUSI & ", ($" & BUSI_amt & "/monthly)"
+		End if
+		If BUSI_ver = "N" or BUSI_ver = "?" then 
+			variable_name_for_BUSI = variable_name_for_BUSI & ", no proof provided.; "
+		Else
+			variable_name_for_BUSI = variable_name_for_BUSI & ".; "
+		End if
+	Else
+		EMReadScreen BUSI_type, 2, 5, 37
+		If BUSI_type = "01" then BUSI_type = "Farming"
+		If BUSI_type = "02" then BUSI_type = "Real Estate"
+		If BUSI_type = "03" then BUSI_type = "Home Product Sales"
+		If BUSI_type = "04" then BUSI_type = "Other Sales"
+		If BUSI_type = "05" then BUSI_type = "Personal Services"
+		If BUSI_type = "06" then BUSI_type = "Paper Route"
+		If BUSI_type = "07" then BUSI_type = "InHome Daycare"
+		If BUSI_type = "08" then BUSI_type = "Rental Income"
+		If BUSI_type = "09" then BUSI_type = "Other"
+		EMWriteScreen "x", 6, 26
+		transmit
+		If cash_check = 1 then
+			EMReadScreen BUSI_ver, 1, 9, 73
+		ElseIf HC_check = 1 then 
+			EMReadScreen BUSI_ver, 1, 12, 73
+			If BUSI_ver = "_" then EMReadScreen BUSI_ver, 1, 13, 73
+		ElseIf SNAP_check = 1 then
+			EMReadScreen BUSI_ver, 1, 11, 73
+		End if
+		PF3
+		If SNAP_check = 1 then
+			EMReadScreen BUSI_amt, 8, 10, 69
+			BUSI_amt = trim(BUSI_amt)
+		ElseIf cash_check = 1 then 
+			EMReadScreen BUSI_amt, 8, 8, 55
+			BUSI_amt = trim(BUSI_amt)
+		ElseIf HC_check = 1 then 
+			EMWriteScreen "x", 17, 27
+			transmit
+			EMReadScreen BUSI_amt, 8, 15, 54
+			If BUSI_amt = "    0.00" then EMReadScreen BUSI_amt, 8, 16, 54
+			BUSI_amt = trim(BUSI_amt)
+			PF3
+		End if
+		variable_name_for_BUSI = variable_name_for_BUSI & trim(BUSI_type) & " BUSI"
+		EMReadScreen BUSI_income_end_date, 8, 5, 72
+		If BUSI_income_end_date <> "__ __ __" then BUSI_income_end_date = replace(BUSI_income_end_date, " ", "/")
+		If IsDate(BUSI_income_end_date) = True then
+			variable_name_for_BUSI = variable_name_for_BUSI & " (ended " & BUSI_income_end_date & ")"
+		Else
+			If BUSI_amt <> "" then variable_name_for_BUSI = variable_name_for_BUSI & ", ($" & BUSI_amt & "/monthly)"
+		End if
+		If BUSI_ver = "N" or BUSI_ver = "?" then 
+			variable_name_for_BUSI = variable_name_for_BUSI & ", no proof provided.; "
+		Else
+			variable_name_for_BUSI = variable_name_for_BUSI & ".; "
+		End if
+	End if
 End function
 
 Function add_CARS_to_variable(x) 'x represents the name of the variable (example: assets vs. spousal_assets)
