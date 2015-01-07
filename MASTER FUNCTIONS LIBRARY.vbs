@@ -276,18 +276,19 @@ Function add_JOBS_to_variable(variable_name_for_JOBS) 'x represents the name of 
     If pay_frequency = "3" then pay_frequency = "biweekly"
     If pay_frequency = "4" then pay_frequency = "weekly"
     If pay_frequency = "_" or pay_frequency = "5" then pay_frequency = "non-monthly"
-	IF snap_pay_frequency = "1" THEN snap_pay_frequency = "monthly"
-	IF snap_pay_frequency = "2" THEN snap_pay_frequency = "semimonthly"
-	IF snap_pay_frequency = "3" THEN snap_pay_frequency = "biweekly"
-	IF snap_pay_frequency = "4" THEN snap_pay_frequency = "weekly"
-	IF snap_pay_frequency = "5" THEN snap_pay_frequency = "non-monthly"
+    IF snap_pay_frequency = "1" THEN snap_pay_frequency = "monthly"
+    IF snap_pay_frequency = "2" THEN snap_pay_frequency = "semimonthly"
+    IF snap_pay_frequency = "3" THEN snap_pay_frequency = "biweekly"
+    IF snap_pay_frequency = "4" THEN snap_pay_frequency = "weekly"
+    IF snap_pay_frequency = "5" THEN snap_pay_frequency = "non-monthly"
     variable_name_for_JOBS = variable_name_for_JOBS & "EI from " & trim(new_JOBS_type) & ", " & JOBS_month  & " amts:; "
     If SNAP_JOBS_amt <> "" then variable_name_for_JOBS = variable_name_for_JOBS & "- PIC: $" & SNAP_JOBS_amt & "/" & snap_pay_frequency & ", calculated " & date_of_pic_calc & "; "
     If retro_JOBS_amt <> "" then variable_name_for_JOBS = variable_name_for_JOBS & "- Retrospective: $" & retro_JOBS_amt & " total; "
-	IF prospective_JOBS_amt <> "" THEN variable_name_for_JOBS = variable_name_for_JOBS & "- Prospective: $" & prospective_JOBS_amt & " total; "
-	IF HC_JOBS_amt <> "________" THEN variable_name_for_JOBS = variable_name_for_JOBS & "- HC Inc Est: $" & HC_JOBS_amt & "/" & pay_frequency & "; "
-   End if
-  If JOBS_ver = "N" or JOBS_ver = "?" then variable_name_for_JOBS = variable_name_for_JOBS & ", no proof provided).; "
+    IF prospective_JOBS_amt <> "" THEN variable_name_for_JOBS = variable_name_for_JOBS & "- Prospective: $" & prospective_JOBS_amt & " total; "
+    IF HC_JOBS_amt <> "________" THEN variable_name_for_JOBS = variable_name_for_JOBS & "- HC Inc Est: $" & HC_JOBS_amt & "/" & pay_frequency & "; "
+    If JOBS_ver = "N" or JOBS_ver = "?" then variable_name_for_JOBS = variable_name_for_JOBS & "- No proof provided for this panel; "
+    variable_name_for_JOBS = variable_name_for_jobs & "; "
+  End if
 End function
 
 Function add_OTHR_to_variable(x) 'x represents the name of the variable (example: assets vs. spousal_assets)
@@ -356,7 +357,9 @@ Function add_SECU_to_variable(x) 'x represents the name of the variable (example
   new_SECU_location = ""
 End function
 
-Function add_UNEA_to_variable(x) 'x represents the name of the variable (example: assets vs. spousal_assets)
+Function add_UNEA_to_variable(variable_name_for_UNEA) 'x represents the name of the variable (example: assets vs. spousal_assets)
+  EMReadScreen UNEA_month, 5, 20, 55
+  UNEA_month = replace(UNEA_month, " ", "/")
   EMReadScreen UNEA_type, 16, 5, 40
   If UNEA_type = "Unemployment Ins" then UNEA_type = "UC"
   If UNEA_type = "Disbursed Child " then UNEA_type = "CS"
@@ -366,63 +369,50 @@ Function add_UNEA_to_variable(x) 'x represents the name of the variable (example
   EMReadScreen UNEA_income_end_date, 8, 7, 68
   If UNEA_income_end_date <> "__ __ __" then UNEA_income_end_date = replace(UNEA_income_end_date, " ", "/")
   If IsDate(UNEA_income_end_date) = True then
-    x = x & UNEA_type & " (ended " & UNEA_income_end_date
+    variable_name_for_UNEA = variable_name_for_UNEA & UNEA_type & " (ended " & UNEA_income_end_date & "); "
   Else
     EMReadScreen UNEA_amt, 8, 18, 68
     UNEA_amt = trim(UNEA_amt)
-    If SNAP_check = 1 then
       EMWriteScreen "x", 10, 26
-      EMSendKey "<enter>"
-      EMWaitReady 0, 0
+      transmit
       EMReadScreen SNAP_UNEA_amt, 8, 17, 56
       SNAP_UNEA_amt = trim(SNAP_UNEA_amt)
-      EMReadScreen pay_frequency, 1, 5, 64
-      EMSendKey "<enter>"
-      EMWaitReady 0, 0
-    ElseIf cash_check = 1 then
+      EMReadScreen snap_pay_frequency, 1, 5, 64
+	EMReadScreen date_of_pic_calc, 8, 5, 34
+	date_of_pic_calc = replace(date_of_pic_calc, " ", "/")
+      transmit
       EMReadScreen retro_UNEA_amt, 8, 18, 39
       retro_UNEA_amt = trim(retro_UNEA_amt)
-      if retro_UNEA_amt = "" then retro_UNEA_amt = "0"
-    ElseIf HC_check = 1 then 
+	EMReadScreen prosp_UNEA_amt, 8, 18, 68
+	prosp_UNEA_amt = trim(prosp_UNEA_amt)
       EMWriteScreen "x", 6, 56
-      EMSendKey "<enter>"
-      EMWaitReady 0, 0
+      transmit
       EMReadScreen HC_UNEA_amt, 8, 9, 65
       HC_UNEA_amt = trim(HC_UNEA_amt)
       EMReadScreen pay_frequency, 1, 10, 63
-      EMSendKey "<enter>"
-      EMWaitReady 0, 0
+      transmit
       If HC_UNEA_amt = "________" then
         EMReadScreen HC_UNEA_amt, 8, 18, 68
         HC_UNEA_amt = trim(HC_UNEA_amt)
         pay_frequency = "mo budgeted prospectively"
-      End if
     End If
     If pay_frequency = "1" then pay_frequency = "monthly"
     If pay_frequency = "2" then pay_frequency = "semimonthly"
     If pay_frequency = "3" then pay_frequency = "biweekly"
     If pay_frequency = "4" then pay_frequency = "weekly"
     If pay_frequency = "_" then pay_frequency = "non-monthly"
-    x = x & trim(UNEA_type)
-    If SNAP_check = 1 then
-      x = x & ", ($" & SNAP_UNEA_amt & "/" & pay_frequency
-    ElseIf cash_check = 1 then
-      if retro_UNEA_amt = "0" then
-        EMReadScreen pro_UNEA_amt, 8, 18, 68
-        pro_UNEA_amt = trim(pro_UNEA_amt)
-        If pro_UNEA_amt = "" then pro_UNEA_amt = "0"
-        x = x & ", ($" & pro_UNEA_amt & " budgeted prospectively"
-      Else
-        x = x & ", ($" & retro_UNEA_amt & " budgeted retrospectively"
-      End if
-    ElseIf HC_check = 1 then 
-      x = x & ", ($" & HC_UNEA_amt & "/" & pay_frequency
-    End if
-  End if
-  If UNEA_ver = "N" or UNEA_ver = "?" then
-    x = x & ", no proof provided).; "
-  Else
-    x = x & ").; "
+    IF snap_pay_frequency = "1" THEN snap_pay_frequency = "monthly"
+    IF snap_pay_frequency = "2" THEN snap_pay_frequency = "semimonthly"
+    IF snap_pay_frequency = "3" THEN snap_pay_frequency = "biweekly"
+    IF snap_pay_frequency = "4" THEN snap_pay_frequency = "weekly"
+    IF snap_pay_frequency = "5" THEN snap_pay_frequency = "non-monthly"
+    variable_name_for_UNEA = variable_name_for_UNEA & "UNEA from " & trim(UNEA_type) & ", " & UNEA_month  & " amts:; "
+    If SNAP_UNEA_amt <> "" THEN variable_name_for_UNEA = variable_name_for_UNEA & "- PIC: $" & SNAP_UNEA_amt & "/" & snap_pay_frequency & ", calculated " & date_of_pic_calc & "; "
+    If retro_UNEA_amt <> "" THEN variable_name_for_UNEA = variable_name_for_UNEA & "- Retrospective: $" & retro_UNEA_amt & " total; "
+    If prosp_UNEA_amt <> "" THEN variable_name_for_UNEA = variable_name_for_UNEA & "- Prospective: $" & prosp_UNEA_amt & " total; "
+    If HC_UNEA_amt <> "" THEN variable_name_for_UNEA = variable_name_for_UNEA & "- HC Inc Est: $" & HC_UNEA_amt & "/" & pay_frequency & "; "
+    If UNEA_ver = "N" or UNEA_ver = "?" then variable_name_for_UNEA = variable_name_for_UNEA & "- No proof provided for this panel; "
+    variable_name_for_UNEA = variable_name_for_UNEA & "; "
   End if
 End function
 
