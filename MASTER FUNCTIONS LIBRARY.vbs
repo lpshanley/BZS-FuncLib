@@ -256,12 +256,12 @@ Function add_BUSI_to_variable(variable_name_for_BUSI) 'x represents the name of 
 		
 		'Entering the variable details based on above
 		variable_name_for_BUSI = variable_name_for_BUSI & trim(BUSI_type) & " BUSI:; "
-		If IsDate(BUSI_income_end_date) = True then	variable_name_for_BUSI = variable_name_for_BUSI & "- Income ended " & BUSI_income_end_date & ".;"
+		If IsDate(BUSI_income_end_date) = True then	variable_name_for_BUSI = variable_name_for_BUSI & "- Income ended " & BUSI_income_end_date & ".; "
 		If BUSI_cash_retro_amt <> "0.00" then variable_name_for_BUSI = variable_name_for_BUSI & "- Cash/GRH retro: $" & BUSI_cash_retro_amt & " budgeted, " & BUSI_cash_ver & "; "
 		If BUSI_cash_pro_amt <> "0.00" then variable_name_for_BUSI = variable_name_for_BUSI & "- Cash/GRH pro: $" & BUSI_cash_pro_amt & " budgeted, " & BUSI_cash_ver & "; "
 		If BUSI_IVE_amt <> "0.00" then variable_name_for_BUSI = variable_name_for_BUSI & "- IV-E: $" & BUSI_IVE_amt & " budgeted, " & BUSI_IVE_ver & "; "
-		If BUSI_SNAP_retro_amt <> "0.00" then variable_name_for_BUSI = variable_name_for_BUSI & "- SNAP/GRH retro: $" & BUSI_SNAP_retro_amt & " budgeted, " & BUSI_SNAP_ver & "; "
-		If BUSI_SNAP_pro_amt <> "0.00" then variable_name_for_BUSI = variable_name_for_BUSI & "- SNAP/GRH pro: $" & BUSI_SNAP_pro_amt & " budgeted, " & BUSI_SNAP_ver & "; "
+		If BUSI_SNAP_retro_amt <> "0.00" then variable_name_for_BUSI = variable_name_for_BUSI & "- SNAP retro: $" & BUSI_SNAP_retro_amt & " budgeted, " & BUSI_SNAP_ver & "; "
+		If BUSI_SNAP_pro_amt <> "0.00" then variable_name_for_BUSI = variable_name_for_BUSI & "- SNAP pro: $" & BUSI_SNAP_pro_amt & " budgeted, " & BUSI_SNAP_ver & "; "
 		If BUSI_HCA_amt <> "0.00" then variable_name_for_BUSI = variable_name_for_BUSI & "- HC Method A: $" & BUSI_HCA_amt & " budgeted, " & BUSI_HCA_ver & "; "
 		If BUSI_HCB_amt <> "0.00" then variable_name_for_BUSI = variable_name_for_BUSI & "- HC Method B: $" & BUSI_HCB_amt & " budgeted, " & BUSI_HCB_ver & "; "
 	End if
@@ -348,7 +348,6 @@ Function add_JOBS_to_variable(variable_name_for_JOBS) 'x represents the name of 
     IF prospective_JOBS_amt <> "" THEN variable_name_for_JOBS = variable_name_for_JOBS & "- Prospective: $" & prospective_JOBS_amt & " total; "
     IF HC_JOBS_amt <> "________" THEN variable_name_for_JOBS = variable_name_for_JOBS & "- HC Inc Est: $" & HC_JOBS_amt & "/" & pay_frequency & "; "
     If JOBS_ver = "N" or JOBS_ver = "?" then variable_name_for_JOBS = variable_name_for_JOBS & "- No proof provided for this panel; "
-    variable_name_for_JOBS = variable_name_for_jobs & "; "
   End if
 End function
 
@@ -365,7 +364,7 @@ End function
 Function add_RBIC_to_variable(variable_name_for_RBIC) 'x represents the name of the variable (example: assets vs. spousal_assets)
 	EMReadScreen RBIC_month, 5, 20, 55
 	RBIC_month = replace(RBIC_month, " ", "/")
-	EMReadScreen RBIC_type, 16, 5, 48
+	EMReadScreen RBIC_type, 14, 5, 48
 	RBIC_type = trim(RBIC_type)
 	EMReadScreen RBIC01_pro_amt, 8, 10, 62
 	RBIC01_pro_amt = trim(RBIC01_pro_amt)
@@ -442,7 +441,7 @@ Function add_RBIC_to_variable(variable_name_for_RBIC) 'x represents the name of 
 		IF left(RBIC02_retro_amt, 1) <> "_" THEN variable_name_for_RBIC = variable_name_for_RBIC & "RBIC: " & trim(RBIC_type) & " from MEMB(s) " & RBIC_group_02 & ", Retrospective, ($" & RBIC02_retro_amt & "); "
 		IF left(RBIC03_pro_amt, 1) <> "_" THEN variable_name_for_RBIC = variable_name_for_RBIC & "RBIC: " & trim(RBIC_type) & " from MEMB(s) " & RBIC_group_03 & ", Prospective, ($" & RBIC03_pro_amt & "); "
 		IF left(RBIC03_retro_amt, 1) <> "_" THEN variable_name_for_RBIC = variable_name_for_RBIC & "RBIC: " & trim(RBIC_type) & " from MEMB(s) " & RBIC_group_03 & ", Retrospective, ($" & RBIC03_retro_amt & "); "
-		variable_name_for_RBIC = variable_name_for_RBIC & "RBIC Expenses:; " & total_RBIC_expenses
+		IF total_RBIC_expenses <> "" THEN variable_name_for_RBIC = variable_name_for_RBIC & "RBIC Expenses:; " & total_RBIC_expenses
 	End if
 End function
 
@@ -541,7 +540,6 @@ Function add_UNEA_to_variable(variable_name_for_UNEA) 'x represents the name of 
     If prosp_UNEA_amt <> "" THEN variable_name_for_UNEA = variable_name_for_UNEA & "- Prospective: $" & prosp_UNEA_amt & " total; "
     If HC_UNEA_amt <> "" THEN variable_name_for_UNEA = variable_name_for_UNEA & "- HC Inc Est: $" & HC_UNEA_amt & "/" & pay_frequency & "; "
     If UNEA_ver = "N" or UNEA_ver = "?" then variable_name_for_UNEA = variable_name_for_UNEA & "- No proof provided for this panel; "
-    variable_name_for_UNEA = variable_name_for_UNEA & "; "
   End if
 End function
 
@@ -562,6 +560,7 @@ Function attn
 End function
 
 Function autofill_editbox_from_MAXIS(HH_member_array, panel_read_from, variable_written_to)
+  If variable_written_to <> "" then variable_written_to = variable_written_to & "; "
   If panel_read_from = "ABPS" then '--------------------------------------------------------------------------------------------------------ABPS
     call navigate_to_screen("stat", "ABPS")
     EMReadScreen ABPS_total_pages, 1, 2, 78
@@ -1406,11 +1405,7 @@ Function autofill_editbox_from_MAXIS(HH_member_array, panel_read_from, variable_
   End if
   variable_written_to = trim(variable_written_to) '-----------------------------------------------------------------------------------------cleaning up editbox
   if right(variable_written_to, 1) = ";" then variable_written_to= left(variable_written_to, len(variable_written_to) - 1)
-  variable_written_to = replace(variable_written_to, "$________/non-monthly", "amt unknown")
-  variable_written_to = replace(variable_written_to, "$________/monthly", "amt unknown")
-  variable_written_to = replace(variable_written_to, "$________/weekly", "amt unknown")
-  variable_written_to = replace(variable_written_to, "$________/biweekly", "amt unknown")
-  variable_written_to = replace(variable_written_to, "$________/semimonthly", "amt unknown")
+
 End function
 
 function back_to_SELF
