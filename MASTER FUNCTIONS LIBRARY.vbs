@@ -154,7 +154,17 @@ Function add_BUSI_to_variable(variable_name_for_BUSI) 'x represents the name of 
 		Else
 			variable_name_for_BUSI = variable_name_for_BUSI & ".; "
 		End if
-	Else
+	Else		'------------This was updated 01/07/2015.
+		'Checks the current footer month. If this is the future, it will know later on to read the HC pop-up
+		EMReadScreen BUSI_footer_month, 5, 20, 55
+		BUSI_footer_month = replace(BUSI_footer_month, " ", "/01/")
+		If datediff("d", date, BUSI_footer_month) > 0 then
+			pull_future_HC = False
+		Else
+			pull_future_HC = True
+		End if
+	
+		'Converting BUSI type code to a human-readable string
 		EMReadScreen BUSI_type, 2, 5, 37
 		If BUSI_type = "01" then BUSI_type = "Farming"
 		If BUSI_type = "02" then BUSI_type = "Real Estate"
@@ -165,44 +175,95 @@ Function add_BUSI_to_variable(variable_name_for_BUSI) 'x represents the name of 
 		If BUSI_type = "07" then BUSI_type = "InHome Daycare"
 		If BUSI_type = "08" then BUSI_type = "Rental Income"
 		If BUSI_type = "09" then BUSI_type = "Other"
+		
+		'Going to the Gross Income Calculation pop-up
 		EMWriteScreen "x", 6, 26
 		transmit
-		If cash_check = 1 then
-			EMReadScreen BUSI_ver, 1, 9, 73
-		ElseIf HC_check = 1 then 
-			EMReadScreen BUSI_ver, 1, 12, 73
-			If BUSI_ver = "_" then EMReadScreen BUSI_ver, 1, 13, 73
-		ElseIf SNAP_check = 1 then
-			EMReadScreen BUSI_ver, 1, 11, 73
-		End if
+		
+		'Getting the verification codes for each type. Only does income, expenses are not included at this time.
+		EMReadScreen BUSI_cash_ver, 1, 9, 73
+		EMReadScreen BUSI_IVE_ver, 1, 10, 73
+		EMReadScreen BUSI_SNAP_ver, 1, 11, 73
+		EMReadScreen BUSI_HCA_ver, 1, 12, 73
+		EMReadScreen BUSI_HCB_ver, 1, 13, 73
+		
+		'Converts each ver type to human readable
+		If BUSI_cash_ver = "1" then BUSI_cash_ver = "tax returns provided"
+		If BUSI_cash_ver = "2" then BUSI_cash_ver = "receipts provided"
+		If BUSI_cash_ver = "3" then BUSI_cash_ver = "client ledger provided"
+		If BUSI_cash_ver = "6" then BUSI_cash_ver = "other doc provided"
+		If BUSI_cash_ver = "N" then BUSI_cash_ver = "no proof provided"
+		If BUSI_cash_ver = "?" then BUSI_cash_ver = "no proof provided"
+		If BUSI_IVE_ver = "1" then BUSI_IVE_ver = "tax returns provided"
+		If BUSI_IVE_ver = "2" then BUSI_IVE_ver = "receipts provided"
+		If BUSI_IVE_ver = "3" then BUSI_IVE_ver = "client ledger provided"
+		If BUSI_IVE_ver = "6" then BUSI_IVE_ver = "other doc provided"
+		If BUSI_IVE_ver = "N" then BUSI_IVE_ver = "no proof provided"
+		If BUSI_IVE_ver = "?" then BUSI_IVE_ver = "no proof provided"
+		If BUSI_SNAP_ver = "1" then BUSI_SNAP_ver = "tax returns provided"
+		If BUSI_SNAP_ver = "2" then BUSI_SNAP_ver = "receipts provided"
+		If BUSI_SNAP_ver = "3" then BUSI_SNAP_ver = "client ledger provided"
+		If BUSI_SNAP_ver = "6" then BUSI_SNAP_ver = "other doc provided"
+		If BUSI_SNAP_ver = "N" then BUSI_SNAP_ver = "no proof provided"
+		If BUSI_SNAP_ver = "?" then BUSI_SNAP_ver = "no proof provided"
+		If BUSI_HCA_ver = "1" then BUSI_HCA_ver = "tax returns provided"
+		If BUSI_HCA_ver = "2" then BUSI_HCA_ver = "receipts provided"
+		If BUSI_HCA_ver = "3" then BUSI_HCA_ver = "client ledger provided"
+		If BUSI_HCA_ver = "6" then BUSI_HCA_ver = "other doc provided"
+		If BUSI_HCA_ver = "N" then BUSI_HCA_ver = "no proof provided"
+		If BUSI_HCA_ver = "?" then BUSI_HCA_ver = "no proof provided"
+		If BUSI_HCB_ver = "1" then BUSI_HCB_ver = "tax returns provided"
+		If BUSI_HCB_ver = "2" then BUSI_HCB_ver = "receipts provided"
+		If BUSI_HCB_ver = "3" then BUSI_HCB_ver = "client ledger provided"
+		If BUSI_HCB_ver = "6" then BUSI_HCB_ver = "other doc provided"
+		If BUSI_HCB_ver = "N" then BUSI_HCB_ver = "no proof provided"
+		If BUSI_HCB_ver = "?" then BUSI_HCB_ver = "no proof provided"
+		
+		'Back to the main screen
 		PF3
-		If SNAP_check = 1 then
-			EMReadScreen BUSI_amt, 8, 10, 69
-			BUSI_amt = trim(BUSI_amt)
-		ElseIf cash_check = 1 then 
-			EMReadScreen BUSI_amt, 8, 8, 55
-			BUSI_amt = trim(BUSI_amt)
-		ElseIf HC_check = 1 then 
+		
+		'Reading each income amount, trimming them to clean out unneeded spaces.
+		EMReadScreen BUSI_cash_retro_amt, 8, 8, 55
+		BUSI_cash_retro_amt = trim(BUSI_cash_retro_amt)
+		EMReadScreen BUSI_cash_pro_amt, 8, 8, 69
+		BUSI_cash_pro_amt = trim(BUSI_cash_pro_amt)
+		EMReadScreen BUSI_IVE_amt, 8, 9, 69
+		BUSI_IVE_amt = trim(BUSI_IVE_amt)
+		EMReadScreen BUSI_SNAP_retro_amt, 8, 10, 55
+		BUSI_SNAP_retro_amt = trim(BUSI_SNAP_retro_amt)
+		EMReadScreen BUSI_SNAP_pro_amt, 8, 10, 69
+		BUSI_SNAP_pro_amt = trim(BUSI_SNAP_pro_amt)
+		
+		'Pulls prospective amounts for HC, either from prosp side or from HC inc est.
+		If pull_future_HC = False then
+			EMReadScreen BUSI_HCA_amt, 8, 11, 69
+			BUSI_HCA_amt = trim(BUSI_HCA_amt)
+			EMReadScreen BUSI_HCB_amt, 8, 12, 69
+			BUSI_HCB_amt = trim(BUSI_HCB_amt)
+		Else
 			EMWriteScreen "x", 17, 27
 			transmit
-			EMReadScreen BUSI_amt, 8, 15, 54
-			If BUSI_amt = "    0.00" then EMReadScreen BUSI_amt, 8, 16, 54
-			BUSI_amt = trim(BUSI_amt)
+			EMReadScreen BUSI_HCA_amt, 8, 15, 54
+			BUSI_HCA_amt = trim(BUSI_HCA_amt)
+			EMReadScreen BUSI_HCB_amt, 8, 16, 54
+			BUSI_HCB_amt = trim(BUSI_HCB_amt)		
 			PF3
 		End if
-		variable_name_for_BUSI = variable_name_for_BUSI & trim(BUSI_type) & " BUSI"
+
+		'Reads end date logic (in case it ended), converts to an actual date
 		EMReadScreen BUSI_income_end_date, 8, 5, 72
 		If BUSI_income_end_date <> "__ __ __" then BUSI_income_end_date = replace(BUSI_income_end_date, " ", "/")
-		If IsDate(BUSI_income_end_date) = True then
-			variable_name_for_BUSI = variable_name_for_BUSI & " (ended " & BUSI_income_end_date & ")"
-		Else
-			If BUSI_amt <> "" then variable_name_for_BUSI = variable_name_for_BUSI & ", ($" & BUSI_amt & "/monthly)"
-		End if
-		If BUSI_ver = "N" or BUSI_ver = "?" then 
-			variable_name_for_BUSI = variable_name_for_BUSI & ", no proof provided.; "
-		Else
-			variable_name_for_BUSI = variable_name_for_BUSI & ".; "
-		End if
+		
+		'Entering the variable details based on above
+		variable_name_for_BUSI = variable_name_for_BUSI & trim(BUSI_type) & " BUSI:; "
+		If IsDate(BUSI_income_end_date) = True then	variable_name_for_BUSI = variable_name_for_BUSI & "- Income ended " & BUSI_income_end_date & ".;"
+		If BUSI_cash_retro_amt <> "0.00" then variable_name_for_BUSI = variable_name_for_BUSI & "- Cash/GRH retro: $" & BUSI_cash_retro_amt & " budgeted, " & BUSI_cash_ver & "; "
+		If BUSI_cash_pro_amt <> "0.00" then variable_name_for_BUSI = variable_name_for_BUSI & "- Cash/GRH pro: $" & BUSI_cash_pro_amt & " budgeted, " & BUSI_cash_ver & "; "
+		If BUSI_IVE_amt <> "0.00" then variable_name_for_BUSI = variable_name_for_BUSI & "- IV-E: $" & BUSI_IVE_amt & " budgeted, " & BUSI_IVE_ver & "; "
+		If BUSI_SNAP_retro_amt <> "0.00" then variable_name_for_BUSI = variable_name_for_BUSI & "- SNAP/GRH retro: $" & BUSI_SNAP_retro_amt & " budgeted, " & BUSI_SNAP_ver & "; "
+		If BUSI_SNAP_pro_amt <> "0.00" then variable_name_for_BUSI = variable_name_for_BUSI & "- SNAP/GRH pro: $" & BUSI_SNAP_pro_amt & " budgeted, " & BUSI_SNAP_ver & "; "
+		If BUSI_HCA_amt <> "0.00" then variable_name_for_BUSI = variable_name_for_BUSI & "- HC Method A: $" & BUSI_HCA_amt & " budgeted, " & BUSI_HCA_ver & "; "
+		If BUSI_HCB_amt <> "0.00" then variable_name_for_BUSI = variable_name_for_BUSI & "- HC Method B: $" & BUSI_HCB_amt & " budgeted, " & BUSI_HCB_ver & "; "
 	End if
 End function
 
