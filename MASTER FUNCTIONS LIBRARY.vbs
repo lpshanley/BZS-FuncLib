@@ -154,7 +154,17 @@ Function add_BUSI_to_variable(variable_name_for_BUSI) 'x represents the name of 
 		Else
 			variable_name_for_BUSI = variable_name_for_BUSI & ".; "
 		End if
-	Else
+	Else		'------------This was updated 01/07/2015.
+		'Checks the current footer month. If this is the future, it will know later on to read the HC pop-up
+		EMReadScreen BUSI_footer_month, 5, 20, 55
+		BUSI_footer_month = replace(BUSI_footer_month, " ", "/01/")
+		If datediff("d", date, BUSI_footer_month) > 0 then
+			pull_future_HC = False
+		Else
+			pull_future_HC = True
+		End if
+	
+		'Converting BUSI type code to a human-readable string
 		EMReadScreen BUSI_type, 2, 5, 37
 		If BUSI_type = "01" then BUSI_type = "Farming"
 		If BUSI_type = "02" then BUSI_type = "Real Estate"
@@ -165,44 +175,95 @@ Function add_BUSI_to_variable(variable_name_for_BUSI) 'x represents the name of 
 		If BUSI_type = "07" then BUSI_type = "InHome Daycare"
 		If BUSI_type = "08" then BUSI_type = "Rental Income"
 		If BUSI_type = "09" then BUSI_type = "Other"
+		
+		'Going to the Gross Income Calculation pop-up
 		EMWriteScreen "x", 6, 26
 		transmit
-		If cash_check = 1 then
-			EMReadScreen BUSI_ver, 1, 9, 73
-		ElseIf HC_check = 1 then 
-			EMReadScreen BUSI_ver, 1, 12, 73
-			If BUSI_ver = "_" then EMReadScreen BUSI_ver, 1, 13, 73
-		ElseIf SNAP_check = 1 then
-			EMReadScreen BUSI_ver, 1, 11, 73
-		End if
+		
+		'Getting the verification codes for each type. Only does income, expenses are not included at this time.
+		EMReadScreen BUSI_cash_ver, 1, 9, 73
+		EMReadScreen BUSI_IVE_ver, 1, 10, 73
+		EMReadScreen BUSI_SNAP_ver, 1, 11, 73
+		EMReadScreen BUSI_HCA_ver, 1, 12, 73
+		EMReadScreen BUSI_HCB_ver, 1, 13, 73
+		
+		'Converts each ver type to human readable
+		If BUSI_cash_ver = "1" then BUSI_cash_ver = "tax returns provided"
+		If BUSI_cash_ver = "2" then BUSI_cash_ver = "receipts provided"
+		If BUSI_cash_ver = "3" then BUSI_cash_ver = "client ledger provided"
+		If BUSI_cash_ver = "6" then BUSI_cash_ver = "other doc provided"
+		If BUSI_cash_ver = "N" then BUSI_cash_ver = "no proof provided"
+		If BUSI_cash_ver = "?" then BUSI_cash_ver = "no proof provided"
+		If BUSI_IVE_ver = "1" then BUSI_IVE_ver = "tax returns provided"
+		If BUSI_IVE_ver = "2" then BUSI_IVE_ver = "receipts provided"
+		If BUSI_IVE_ver = "3" then BUSI_IVE_ver = "client ledger provided"
+		If BUSI_IVE_ver = "6" then BUSI_IVE_ver = "other doc provided"
+		If BUSI_IVE_ver = "N" then BUSI_IVE_ver = "no proof provided"
+		If BUSI_IVE_ver = "?" then BUSI_IVE_ver = "no proof provided"
+		If BUSI_SNAP_ver = "1" then BUSI_SNAP_ver = "tax returns provided"
+		If BUSI_SNAP_ver = "2" then BUSI_SNAP_ver = "receipts provided"
+		If BUSI_SNAP_ver = "3" then BUSI_SNAP_ver = "client ledger provided"
+		If BUSI_SNAP_ver = "6" then BUSI_SNAP_ver = "other doc provided"
+		If BUSI_SNAP_ver = "N" then BUSI_SNAP_ver = "no proof provided"
+		If BUSI_SNAP_ver = "?" then BUSI_SNAP_ver = "no proof provided"
+		If BUSI_HCA_ver = "1" then BUSI_HCA_ver = "tax returns provided"
+		If BUSI_HCA_ver = "2" then BUSI_HCA_ver = "receipts provided"
+		If BUSI_HCA_ver = "3" then BUSI_HCA_ver = "client ledger provided"
+		If BUSI_HCA_ver = "6" then BUSI_HCA_ver = "other doc provided"
+		If BUSI_HCA_ver = "N" then BUSI_HCA_ver = "no proof provided"
+		If BUSI_HCA_ver = "?" then BUSI_HCA_ver = "no proof provided"
+		If BUSI_HCB_ver = "1" then BUSI_HCB_ver = "tax returns provided"
+		If BUSI_HCB_ver = "2" then BUSI_HCB_ver = "receipts provided"
+		If BUSI_HCB_ver = "3" then BUSI_HCB_ver = "client ledger provided"
+		If BUSI_HCB_ver = "6" then BUSI_HCB_ver = "other doc provided"
+		If BUSI_HCB_ver = "N" then BUSI_HCB_ver = "no proof provided"
+		If BUSI_HCB_ver = "?" then BUSI_HCB_ver = "no proof provided"
+		
+		'Back to the main screen
 		PF3
-		If SNAP_check = 1 then
-			EMReadScreen BUSI_amt, 8, 10, 69
-			BUSI_amt = trim(BUSI_amt)
-		ElseIf cash_check = 1 then 
-			EMReadScreen BUSI_amt, 8, 8, 55
-			BUSI_amt = trim(BUSI_amt)
-		ElseIf HC_check = 1 then 
+		
+		'Reading each income amount, trimming them to clean out unneeded spaces.
+		EMReadScreen BUSI_cash_retro_amt, 8, 8, 55
+		BUSI_cash_retro_amt = trim(BUSI_cash_retro_amt)
+		EMReadScreen BUSI_cash_pro_amt, 8, 8, 69
+		BUSI_cash_pro_amt = trim(BUSI_cash_pro_amt)
+		EMReadScreen BUSI_IVE_amt, 8, 9, 69
+		BUSI_IVE_amt = trim(BUSI_IVE_amt)
+		EMReadScreen BUSI_SNAP_retro_amt, 8, 10, 55
+		BUSI_SNAP_retro_amt = trim(BUSI_SNAP_retro_amt)
+		EMReadScreen BUSI_SNAP_pro_amt, 8, 10, 69
+		BUSI_SNAP_pro_amt = trim(BUSI_SNAP_pro_amt)
+		
+		'Pulls prospective amounts for HC, either from prosp side or from HC inc est.
+		If pull_future_HC = False then
+			EMReadScreen BUSI_HCA_amt, 8, 11, 69
+			BUSI_HCA_amt = trim(BUSI_HCA_amt)
+			EMReadScreen BUSI_HCB_amt, 8, 12, 69
+			BUSI_HCB_amt = trim(BUSI_HCB_amt)
+		Else
 			EMWriteScreen "x", 17, 27
 			transmit
-			EMReadScreen BUSI_amt, 8, 15, 54
-			If BUSI_amt = "    0.00" then EMReadScreen BUSI_amt, 8, 16, 54
-			BUSI_amt = trim(BUSI_amt)
+			EMReadScreen BUSI_HCA_amt, 8, 15, 54
+			BUSI_HCA_amt = trim(BUSI_HCA_amt)
+			EMReadScreen BUSI_HCB_amt, 8, 16, 54
+			BUSI_HCB_amt = trim(BUSI_HCB_amt)		
 			PF3
 		End if
-		variable_name_for_BUSI = variable_name_for_BUSI & trim(BUSI_type) & " BUSI"
+
+		'Reads end date logic (in case it ended), converts to an actual date
 		EMReadScreen BUSI_income_end_date, 8, 5, 72
 		If BUSI_income_end_date <> "__ __ __" then BUSI_income_end_date = replace(BUSI_income_end_date, " ", "/")
-		If IsDate(BUSI_income_end_date) = True then
-			variable_name_for_BUSI = variable_name_for_BUSI & " (ended " & BUSI_income_end_date & ")"
-		Else
-			If BUSI_amt <> "" then variable_name_for_BUSI = variable_name_for_BUSI & ", ($" & BUSI_amt & "/monthly)"
-		End if
-		If BUSI_ver = "N" or BUSI_ver = "?" then 
-			variable_name_for_BUSI = variable_name_for_BUSI & ", no proof provided.; "
-		Else
-			variable_name_for_BUSI = variable_name_for_BUSI & ".; "
-		End if
+		
+		'Entering the variable details based on above
+		variable_name_for_BUSI = variable_name_for_BUSI & trim(BUSI_type) & " BUSI:; "
+		If IsDate(BUSI_income_end_date) = True then	variable_name_for_BUSI = variable_name_for_BUSI & "- Income ended " & BUSI_income_end_date & ".;"
+		If BUSI_cash_retro_amt <> "0.00" then variable_name_for_BUSI = variable_name_for_BUSI & "- Cash/GRH retro: $" & BUSI_cash_retro_amt & " budgeted, " & BUSI_cash_ver & "; "
+		If BUSI_cash_pro_amt <> "0.00" then variable_name_for_BUSI = variable_name_for_BUSI & "- Cash/GRH pro: $" & BUSI_cash_pro_amt & " budgeted, " & BUSI_cash_ver & "; "
+		If BUSI_IVE_amt <> "0.00" then variable_name_for_BUSI = variable_name_for_BUSI & "- IV-E: $" & BUSI_IVE_amt & " budgeted, " & BUSI_IVE_ver & "; "
+		If BUSI_SNAP_retro_amt <> "0.00" then variable_name_for_BUSI = variable_name_for_BUSI & "- SNAP/GRH retro: $" & BUSI_SNAP_retro_amt & " budgeted, " & BUSI_SNAP_ver & "; "
+		If BUSI_SNAP_pro_amt <> "0.00" then variable_name_for_BUSI = variable_name_for_BUSI & "- SNAP/GRH pro: $" & BUSI_SNAP_pro_amt & " budgeted, " & BUSI_SNAP_ver & "; "
+		If BUSI_HCA_amt <> "0.00" then variable_name_for_BUSI = variable_name_for_BUSI & "- HC Method A: $" & BUSI_HCA_amt & " budgeted, " & BUSI_HCA_ver & "; "
+		If BUSI_HCB_amt <> "0.00" then variable_name_for_BUSI = variable_name_for_BUSI & "- HC Method B: $" & BUSI_HCB_amt & " budgeted, " & BUSI_HCB_ver & "; "
 	End if
 End function
 
@@ -228,7 +289,9 @@ Function add_CARS_to_variable(x) 'x represents the name of the variable (example
   new_CARS_type = ""
 End function
 
-Function add_JOBS_to_variable(x) 'x represents the name of the variable (example: assets vs. spousal_assets)
+Function add_JOBS_to_variable(variable_name_for_JOBS) 'x represents the name of the variable (example: assets vs. spousal_assets)
+  EMReadScreen JOBS_month, 5, 20, 55
+  JOBS_month = replace(JOBS_month, " ", "/")
   EMReadScreen JOBS_type, 30, 7, 42
   JOBS_type = replace(JOBS_type, "_", ""	)
   JOBS_type = trim(JOBS_type)
@@ -240,52 +303,52 @@ Function add_JOBS_to_variable(x) 'x represents the name of the variable (example
       new_JOBS_type = new_JOBS_type & b & c & " "
     End if
   Next
-  If SNAP_check = 1 then
+' Navigates to the FS PIC
     EMWriteScreen "x", 19, 38
-    EMSendKey "<enter>"
-    EMWaitReady 0, 0
+    transmit
     EMReadScreen SNAP_JOBS_amt, 8, 17, 56
     SNAP_JOBS_amt = trim(SNAP_JOBS_amt)
-    EMReadScreen pay_frequency, 1, 5, 64
-    EMSendKey "<enter>"
-    EMWaitReady 0, 0
-  ElseIf cash_check = 1 then
+    EMReadScreen snap_pay_frequency, 1, 5, 64
+	EMReadScreen date_of_pic_calc, 8, 5, 34
+	date_of_pic_calc = replace(date_of_pic_calc, " ", "/")
+    transmit
+'  Reads the information on the retro side of JOBS
     EMReadScreen retro_JOBS_amt, 8, 17, 38
     retro_JOBS_amt = trim(retro_JOBS_amt)
-  ElseIf HC_check = 1 then 
+'  Reads the information on the prospective side of JOBS
+	EMReadScreen prospective_JOBS_amt, 8, 17, 67
+	prospective_JOBS_amt = trim(prospective_JOBS_amt)
+'  Reads the information about health care off of HC Income Estimator 
     EMReadScreen pay_frequency, 1, 18, 35
     EMWriteScreen "x", 19, 54
-    EMSendKey "<enter>"
-    EMWaitReady 0, 0
+    transmit
     EMReadScreen HC_JOBS_amt, 8, 11, 63
     HC_JOBS_amt = trim(HC_JOBS_amt)
-    EMSendKey "<enter>"
-    EMWaitReady 0, 0
-  End If
+    transmit
+  
   EMReadScreen JOBS_ver, 1, 6, 38
   EMReadScreen JOBS_income_end_date, 8, 9, 49
   If JOBS_income_end_date <> "__ __ __" then JOBS_income_end_date = replace(JOBS_income_end_date, " ", "/")
   If IsDate(JOBS_income_end_date) = True then
-    x = x & new_JOBS_type & "(ended " & JOBS_income_end_date
+    variable_name_for_JOBS = variable_name_for_JOBS & new_JOBS_type & "(ended " & JOBS_income_end_date & "); "
   Else
     If pay_frequency = "1" then pay_frequency = "monthly"
     If pay_frequency = "2" then pay_frequency = "semimonthly"
     If pay_frequency = "3" then pay_frequency = "biweekly"
     If pay_frequency = "4" then pay_frequency = "weekly"
     If pay_frequency = "_" or pay_frequency = "5" then pay_frequency = "non-monthly"
-    x = x & "EI from " & trim(new_JOBS_type)
-    If SNAP_check = 1 then
-      x = x & ", ($" & SNAP_JOBS_amt & "/" & pay_frequency
-    ElseIf cash_check = 1 then
-      x = x & ", ($" & retro_JOBS_amt & " budgeted"
-    ElseIf HC_check = 1 then 
-      x = x & ", ($" & HC_JOBS_amt & "/" & pay_frequency 
-    End if
-  End if
-  If JOBS_ver = "N" or JOBS_ver = "?" then
-    x = x & ", no proof provided).; "
-  Else
-    x = x & ").; "
+    IF snap_pay_frequency = "1" THEN snap_pay_frequency = "monthly"
+    IF snap_pay_frequency = "2" THEN snap_pay_frequency = "semimonthly"
+    IF snap_pay_frequency = "3" THEN snap_pay_frequency = "biweekly"
+    IF snap_pay_frequency = "4" THEN snap_pay_frequency = "weekly"
+    IF snap_pay_frequency = "5" THEN snap_pay_frequency = "non-monthly"
+    variable_name_for_JOBS = variable_name_for_JOBS & "EI from " & trim(new_JOBS_type) & ", " & JOBS_month  & " amts:; "
+    If SNAP_JOBS_amt <> "" then variable_name_for_JOBS = variable_name_for_JOBS & "- PIC: $" & SNAP_JOBS_amt & "/" & snap_pay_frequency & ", calculated " & date_of_pic_calc & "; "
+    If retro_JOBS_amt <> "" then variable_name_for_JOBS = variable_name_for_JOBS & "- Retrospective: $" & retro_JOBS_amt & " total; "
+    IF prospective_JOBS_amt <> "" THEN variable_name_for_JOBS = variable_name_for_JOBS & "- Prospective: $" & prospective_JOBS_amt & " total; "
+    IF HC_JOBS_amt <> "________" THEN variable_name_for_JOBS = variable_name_for_JOBS & "- HC Inc Est: $" & HC_JOBS_amt & "/" & pay_frequency & "; "
+    If JOBS_ver = "N" or JOBS_ver = "?" then variable_name_for_JOBS = variable_name_for_JOBS & "- No proof provided for this panel; "
+    variable_name_for_JOBS = variable_name_for_jobs & "; "
   End if
 End function
 
@@ -299,20 +362,88 @@ Function add_OTHR_to_variable(x) 'x represents the name of the variable (example
   new_OTHR_type = ""
 End function
 
-Function add_RBIC_to_variable(x) 'x represents the name of the variable (example: assets vs. spousal_assets)
-  EMReadScreen RBIC_type, 16, 5, 48
-  RBIC_type = trim(RBIC_type)
-  EMReadScreen RBIC_amt, 8, 10, 62
-  RBIC_amt = trim(RBIC_amt)
-  EMReadScreen RBIC_ver, 1, 10, 76
-  If RBIC_ver = "N" then RBIC_ver = ", no proof provided"
-  EMReadScreen RBIC_end_date, 8, 6, 68
-  RBIC_end_date = replace(RBIC_end_date, " ", "/")
-  If isdate(RBIC_end_date) = True then
-    x = x & trim(RBIC_type) & " RBIC, ended " & RBIC_end_date & RBIC_ver & ".; "
-  Else
-    x = x & trim(RBIC_type) & " RBIC, ($" & RBIC_amt & RBIC_ver & ").; "
-  End if
+Function add_RBIC_to_variable(variable_name_for_RBIC) 'x represents the name of the variable (example: assets vs. spousal_assets)
+	EMReadScreen RBIC_month, 5, 20, 55
+	RBIC_month = replace(RBIC_month, " ", "/")
+	EMReadScreen RBIC_type, 16, 5, 48
+	RBIC_type = trim(RBIC_type)
+	EMReadScreen RBIC01_pro_amt, 8, 10, 62
+	RBIC01_pro_amt = trim(RBIC01_pro_amt)
+	EMReadScreen RBIC02_pro_amt, 8, 11, 62
+	RBIC02_pro_amt = trim(RBIC02_pro_amt)
+	EMReadScreen RBIC03_pro_amt, 8, 12, 62
+	RBIC03_pro_amt = trim(RBIC03_pro_amt)
+	EMReadScreen RBIC01_retro_amt, 8, 10, 47
+	IF RBIC01_retro_amt <> "________" THEN RBIC01_retro_amt = trim(RBIC01_retro_amt)
+	EMReadScreen RBIC02_retro_amt, 8, 11, 47
+	IF RBIC02_retro_amt <> "________" THEN RBIC02_retro_amt = trim(RBIC02_retro_amt)
+	EMReadScreen RBIC03_retro_amt, 8, 12, 47
+	IF RBIC03_retro_amt <> "________" THEN RBIC03_retro_amt = trim(RBIC03_retro_amt)
+	EMReadScreen RBIC_group_01, 17, 10, 25
+		RBIC_group_01 = replace(RBIC_group_01, " __", "")
+		RBIC_group_01 = replace(RBIC_group_01, " ", ", ")
+	EMReadScreen RBIC_group_02, 17, 11, 25
+		RBIC_group_02 = replace(RBIC_group_02, " __", "")
+		RBIC_group_02 = replace(RBIC_group_02, " ", ", ")
+	EMReadScreen RBIC_group_03, 17, 12, 25
+		RBIC_group_03 = replace(RBIC_group_03, " __", "")
+		RBIC_group_03 = replace(RBIC_group_03, " ", ", ")
+	
+	EMReadScreen RBIC_01_verif, 1, 10, 76
+	IF RBIC_01_verif = "N" THEN
+		RBIC01_pro_amt = RBIC01_pro_amt & ", not verified"
+		RBIC01_retro_amt = RBIC01_retro_amt & ", not verified"
+	END IF
+	
+	EMReadScreen RBIC_02_verif, 1, 11, 76
+	IF RBIC_02_verif = "N" THEN
+		RBIC02_pro_amt = RBIC02_pro_amt & ", not verified"
+		RBIC02_retro_amt = RBIC02_retro_amt & ", not verified"
+	END IF
+	
+	EMReadScreen RBIC_03_verif, 1, 12, 76
+	IF RBIC_03_verif = "N" THEN
+		RBIC03_pro_amt = RBIC03_pro_amt & ", not verified"
+		RBIC03_retro_amt = RBIC03_retro_amt & ", not verified"
+	END IF
+	
+	RBIC_expense_row = 15
+	DO
+		EMReadScreen RBIC_expense_type, 13, RBIC_expense_row, 28
+		RBIC_expense_type = trim(RBIC_expense_type)
+		EMReadScreen RBIC_expense_amt, 8, RBIC_expense_row, 62
+		RBIC_expense_amt = trim(RBIC_expense_amt)
+		EMReadScreen RBIC_expense_verif, 1, RBIC_expense_row, 76
+		IF RBIC_expense_type <> "" THEN
+			total_RBIC_expenses = total_RBIC_expenses & "- " & RBIC_expense_type & ", $" & RBIC_expense_amt
+			IF RBIC_expense_verif <> "N" THEN
+				total_RBIC_expenses = total_RBIC_expenses & "; "
+			ELSE
+				total_RBIC_expenses = total_RBIC_expenses & ", not verified; "
+			END IF
+			RBIC_expense_row = RBIC_expense_row + 1
+			IF RBIC_expense_row = 19 THEN
+				PF20
+				EMReadScreen RBIC_last_page, 21, 24, 2
+				RBIC_expense_row = 15
+			END IF
+		END IF
+	LOOP UNTIL RBIC_expense_type = "" OR RBIC_last_page = "THIS IS THE LAST PAGE"
+	EMReadScreen RBIC_ver, 1, 10, 76
+	If RBIC_ver = "N" then RBIC_ver = ", no proof provided"
+	EMReadScreen RBIC_end_date, 8, 6, 68
+	RBIC_end_date = replace(RBIC_end_date, " ", "/")
+	If isdate(RBIC_end_date) = True then
+		variable_name_for_RBIC = variable_name_for_RBIC & trim(RBIC_type) & " RBIC, ended " & RBIC_end_date & RBIC_ver & "; "
+	Else
+		IF left(RBIC01_pro_amt, 1) <> "_" THEN variable_name_for_RBIC = variable_name_for_RBIC & "RBIC: " & trim(RBIC_type) & " from MEMB(s) " & RBIC_group_01 & ", Prospective, ($" & RBIC01_pro_amt & "); "
+		IF left(RBIC01_retro_amt, 1) <> "_" THEN variable_name_for_RBIC = variable_name_for_RBIC & "RBIC: " & trim(RBIC_type) & " from MEMB(s) " & RBIC_group_01 & ", Retrospective, ($" & RBIC01_retro_amt & "); "
+		IF left(RBIC02_pro_amt, 1) <> "_" THEN variable_name_for_RBIC = variable_name_for_RBIC & "RBIC: " & trim(RBIC_type) & " from MEMB(s) " & RBIC_group_02 & ", Prospective, ($" & RBIC02_pro_amt & "); "
+		IF left(RBIC02_retro_amt, 1) <> "_" THEN variable_name_for_RBIC = variable_name_for_RBIC & "RBIC: " & trim(RBIC_type) & " from MEMB(s) " & RBIC_group_02 & ", Retrospective, ($" & RBIC02_retro_amt & "); "
+		IF left(RBIC03_pro_amt, 1) <> "_" THEN variable_name_for_RBIC = variable_name_for_RBIC & "RBIC: " & trim(RBIC_type) & " from MEMB(s) " & RBIC_group_03 & ", Prospective, ($" & RBIC03_pro_amt & "); "
+		IF left(RBIC03_retro_amt, 1) <> "_" THEN variable_name_for_RBIC = variable_name_for_RBIC & "RBIC: " & trim(RBIC_type) & " from MEMB(s) " & RBIC_group_03 & ", Retrospective, ($" & RBIC03_retro_amt & "); "
+		variable_name_for_RBIC = variable_name_for_RBIC & "RBIC Expenses:; " & total_RBIC_expenses
+	End if
 End function
 
 Function add_REST_to_variable(x) 'x represents the name of the variable (example: assets vs. spousal_assets)
@@ -355,7 +486,9 @@ Function add_SECU_to_variable(x) 'x represents the name of the variable (example
   new_SECU_location = ""
 End function
 
-Function add_UNEA_to_variable(x) 'x represents the name of the variable (example: assets vs. spousal_assets)
+Function add_UNEA_to_variable(variable_name_for_UNEA) 'x represents the name of the variable (example: assets vs. spousal_assets)
+  EMReadScreen UNEA_month, 5, 20, 55
+  UNEA_month = replace(UNEA_month, " ", "/")
   EMReadScreen UNEA_type, 16, 5, 40
   If UNEA_type = "Unemployment Ins" then UNEA_type = "UC"
   If UNEA_type = "Disbursed Child " then UNEA_type = "CS"
@@ -365,63 +498,50 @@ Function add_UNEA_to_variable(x) 'x represents the name of the variable (example
   EMReadScreen UNEA_income_end_date, 8, 7, 68
   If UNEA_income_end_date <> "__ __ __" then UNEA_income_end_date = replace(UNEA_income_end_date, " ", "/")
   If IsDate(UNEA_income_end_date) = True then
-    x = x & UNEA_type & " (ended " & UNEA_income_end_date
+    variable_name_for_UNEA = variable_name_for_UNEA & UNEA_type & " (ended " & UNEA_income_end_date & "); "
   Else
     EMReadScreen UNEA_amt, 8, 18, 68
     UNEA_amt = trim(UNEA_amt)
-    If SNAP_check = 1 then
       EMWriteScreen "x", 10, 26
-      EMSendKey "<enter>"
-      EMWaitReady 0, 0
+      transmit
       EMReadScreen SNAP_UNEA_amt, 8, 17, 56
       SNAP_UNEA_amt = trim(SNAP_UNEA_amt)
-      EMReadScreen pay_frequency, 1, 5, 64
-      EMSendKey "<enter>"
-      EMWaitReady 0, 0
-    ElseIf cash_check = 1 then
+      EMReadScreen snap_pay_frequency, 1, 5, 64
+	EMReadScreen date_of_pic_calc, 8, 5, 34
+	date_of_pic_calc = replace(date_of_pic_calc, " ", "/")
+      transmit
       EMReadScreen retro_UNEA_amt, 8, 18, 39
       retro_UNEA_amt = trim(retro_UNEA_amt)
-      if retro_UNEA_amt = "" then retro_UNEA_amt = "0"
-    ElseIf HC_check = 1 then 
+	EMReadScreen prosp_UNEA_amt, 8, 18, 68
+	prosp_UNEA_amt = trim(prosp_UNEA_amt)
       EMWriteScreen "x", 6, 56
-      EMSendKey "<enter>"
-      EMWaitReady 0, 0
+      transmit
       EMReadScreen HC_UNEA_amt, 8, 9, 65
       HC_UNEA_amt = trim(HC_UNEA_amt)
       EMReadScreen pay_frequency, 1, 10, 63
-      EMSendKey "<enter>"
-      EMWaitReady 0, 0
+      transmit
       If HC_UNEA_amt = "________" then
         EMReadScreen HC_UNEA_amt, 8, 18, 68
         HC_UNEA_amt = trim(HC_UNEA_amt)
         pay_frequency = "mo budgeted prospectively"
-      End if
     End If
     If pay_frequency = "1" then pay_frequency = "monthly"
     If pay_frequency = "2" then pay_frequency = "semimonthly"
     If pay_frequency = "3" then pay_frequency = "biweekly"
     If pay_frequency = "4" then pay_frequency = "weekly"
     If pay_frequency = "_" then pay_frequency = "non-monthly"
-    x = x & trim(UNEA_type)
-    If SNAP_check = 1 then
-      x = x & ", ($" & SNAP_UNEA_amt & "/" & pay_frequency
-    ElseIf cash_check = 1 then
-      if retro_UNEA_amt = "0" then
-        EMReadScreen pro_UNEA_amt, 8, 18, 68
-        pro_UNEA_amt = trim(pro_UNEA_amt)
-        If pro_UNEA_amt = "" then pro_UNEA_amt = "0"
-        x = x & ", ($" & pro_UNEA_amt & " budgeted prospectively"
-      Else
-        x = x & ", ($" & retro_UNEA_amt & " budgeted retrospectively"
-      End if
-    ElseIf HC_check = 1 then 
-      x = x & ", ($" & HC_UNEA_amt & "/" & pay_frequency
-    End if
-  End if
-  If UNEA_ver = "N" or UNEA_ver = "?" then
-    x = x & ", no proof provided).; "
-  Else
-    x = x & ").; "
+    IF snap_pay_frequency = "1" THEN snap_pay_frequency = "monthly"
+    IF snap_pay_frequency = "2" THEN snap_pay_frequency = "semimonthly"
+    IF snap_pay_frequency = "3" THEN snap_pay_frequency = "biweekly"
+    IF snap_pay_frequency = "4" THEN snap_pay_frequency = "weekly"
+    IF snap_pay_frequency = "5" THEN snap_pay_frequency = "non-monthly"
+    variable_name_for_UNEA = variable_name_for_UNEA & "UNEA from " & trim(UNEA_type) & ", " & UNEA_month  & " amts:; "
+    If SNAP_UNEA_amt <> "" THEN variable_name_for_UNEA = variable_name_for_UNEA & "- PIC: $" & SNAP_UNEA_amt & "/" & snap_pay_frequency & ", calculated " & date_of_pic_calc & "; "
+    If retro_UNEA_amt <> "" THEN variable_name_for_UNEA = variable_name_for_UNEA & "- Retrospective: $" & retro_UNEA_amt & " total; "
+    If prosp_UNEA_amt <> "" THEN variable_name_for_UNEA = variable_name_for_UNEA & "- Prospective: $" & prosp_UNEA_amt & " total; "
+    If HC_UNEA_amt <> "" THEN variable_name_for_UNEA = variable_name_for_UNEA & "- HC Inc Est: $" & HC_UNEA_amt & "/" & pay_frequency & "; "
+    If UNEA_ver = "N" or UNEA_ver = "?" then variable_name_for_UNEA = variable_name_for_UNEA & "- No proof provided for this panel; "
+    variable_name_for_UNEA = variable_name_for_UNEA & "; "
   End if
 End function
 
@@ -2286,3 +2406,4 @@ FUNCTION write_TIKL_function(tikl_text)
 	IF tikl_line_five <> "" THEN EMWriteScreen tikl_line_five, 13, 3
 	transmit
 END FUNCTION
+
