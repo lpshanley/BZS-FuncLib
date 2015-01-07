@@ -301,20 +301,88 @@ Function add_OTHR_to_variable(x) 'x represents the name of the variable (example
   new_OTHR_type = ""
 End function
 
-Function add_RBIC_to_variable(x) 'x represents the name of the variable (example: assets vs. spousal_assets)
-  EMReadScreen RBIC_type, 16, 5, 48
-  RBIC_type = trim(RBIC_type)
-  EMReadScreen RBIC_amt, 8, 10, 62
-  RBIC_amt = trim(RBIC_amt)
-  EMReadScreen RBIC_ver, 1, 10, 76
-  If RBIC_ver = "N" then RBIC_ver = ", no proof provided"
-  EMReadScreen RBIC_end_date, 8, 6, 68
-  RBIC_end_date = replace(RBIC_end_date, " ", "/")
-  If isdate(RBIC_end_date) = True then
-    x = x & trim(RBIC_type) & " RBIC, ended " & RBIC_end_date & RBIC_ver & ".; "
-  Else
-    x = x & trim(RBIC_type) & " RBIC, ($" & RBIC_amt & RBIC_ver & ").; "
-  End if
+Function add_RBIC_to_variable(variable_name_for_RBIC) 'x represents the name of the variable (example: assets vs. spousal_assets)
+	EMReadScreen RBIC_month, 5, 20, 55
+	RBIC_month = replace(RBIC_month, " ", "/")
+	EMReadScreen RBIC_type, 16, 5, 48
+	RBIC_type = trim(RBIC_type)
+	EMReadScreen RBIC01_pro_amt, 8, 10, 62
+	RBIC01_pro_amt = trim(RBIC01_pro_amt)
+	EMReadScreen RBIC02_pro_amt, 8, 11, 62
+	RBIC02_pro_amt = trim(RBIC02_pro_amt)
+	EMReadScreen RBIC03_pro_amt, 8, 12, 62
+	RBIC03_pro_amt = trim(RBIC03_pro_amt)
+	EMReadScreen RBIC01_retro_amt, 8, 10, 47
+	IF RBIC01_retro_amt <> "________" THEN RBIC01_retro_amt = trim(RBIC01_retro_amt)
+	EMReadScreen RBIC02_retro_amt, 8, 11, 47
+	IF RBIC02_retro_amt <> "________" THEN RBIC02_retro_amt = trim(RBIC02_retro_amt)
+	EMReadScreen RBIC03_retro_amt, 8, 12, 47
+	IF RBIC03_retro_amt <> "________" THEN RBIC03_retro_amt = trim(RBIC03_retro_amt)
+	EMReadScreen RBIC_group_01, 17, 10, 25
+		RBIC_group_01 = replace(RBIC_group_01, " __", "")
+		RBIC_group_01 = replace(RBIC_group_01, " ", ", ")
+	EMReadScreen RBIC_group_02, 17, 11, 25
+		RBIC_group_02 = replace(RBIC_group_02, " __", "")
+		RBIC_group_02 = replace(RBIC_group_02, " ", ", ")
+	EMReadScreen RBIC_group_03, 17, 12, 25
+		RBIC_group_03 = replace(RBIC_group_03, " __", "")
+		RBIC_group_03 = replace(RBIC_group_03, " ", ", ")
+	
+	EMReadScreen RBIC_01_verif, 1, 10, 76
+	IF RBIC_01_verif = "N" THEN
+		RBIC01_pro_amt = RBIC01_pro_amt & ", not verified"
+		RBIC01_retro_amt = RBIC01_retro_amt & ", not verified"
+	END IF
+	
+	EMReadScreen RBIC_02_verif, 1, 11, 76
+	IF RBIC_02_verif = "N" THEN
+		RBIC02_pro_amt = RBIC02_pro_amt & ", not verified"
+		RBIC02_retro_amt = RBIC02_retro_amt & ", not verified"
+	END IF
+	
+	EMReadScreen RBIC_03_verif, 1, 12, 76
+	IF RBIC_03_verif = "N" THEN
+		RBIC03_pro_amt = RBIC03_pro_amt & ", not verified"
+		RBIC03_retro_amt = RBIC03_retro_amt & ", not verified"
+	END IF
+	
+	RBIC_expense_row = 15
+	DO
+		EMReadScreen RBIC_expense_type, 13, RBIC_expense_row, 28
+		RBIC_expense_type = trim(RBIC_expense_type)
+		EMReadScreen RBIC_expense_amt, 8, RBIC_expense_row, 62
+		RBIC_expense_amt = trim(RBIC_expense_amt)
+		EMReadScreen RBIC_expense_verif, 1, RBIC_expense_row, 76
+		IF RBIC_expense_type <> "" THEN
+			total_RBIC_expenses = total_RBIC_expenses & "- " & RBIC_expense_type & ", $" & RBIC_expense_amt
+			IF RBIC_expense_verif <> "N" THEN
+				total_RBIC_expenses = total_RBIC_expenses & "; "
+			ELSE
+				total_RBIC_expenses = total_RBIC_expenses & ", not verified; "
+			END IF
+			RBIC_expense_row = RBIC_expense_row + 1
+			IF RBIC_expense_row = 19 THEN
+				PF20
+				EMReadScreen RBIC_last_page, 21, 24, 2
+				RBIC_expense_row = 15
+			END IF
+		END IF
+	LOOP UNTIL RBIC_expense_type = "" OR RBIC_last_page = "THIS IS THE LAST PAGE"
+	EMReadScreen RBIC_ver, 1, 10, 76
+	If RBIC_ver = "N" then RBIC_ver = ", no proof provided"
+	EMReadScreen RBIC_end_date, 8, 6, 68
+	RBIC_end_date = replace(RBIC_end_date, " ", "/")
+	If isdate(RBIC_end_date) = True then
+		variable_name_for_RBIC = variable_name_for_RBIC & trim(RBIC_type) & " RBIC, ended " & RBIC_end_date & RBIC_ver & "; "
+	Else
+		IF left(RBIC01_pro_amt, 1) <> "_" THEN variable_name_for_RBIC = variable_name_for_RBIC & "RBIC: " & trim(RBIC_type) & " from MEMB(s) " & RBIC_group_01 & ", Prospective, ($" & RBIC01_pro_amt & "); "
+		IF left(RBIC01_retro_amt, 1) <> "_" THEN variable_name_for_RBIC = variable_name_for_RBIC & "RBIC: " & trim(RBIC_type) & " from MEMB(s) " & RBIC_group_01 & ", Retrospective, ($" & RBIC01_retro_amt & "); "
+		IF left(RBIC02_pro_amt, 1) <> "_" THEN variable_name_for_RBIC = variable_name_for_RBIC & "RBIC: " & trim(RBIC_type) & " from MEMB(s) " & RBIC_group_02 & ", Prospective, ($" & RBIC02_pro_amt & "); "
+		IF left(RBIC02_retro_amt, 1) <> "_" THEN variable_name_for_RBIC = variable_name_for_RBIC & "RBIC: " & trim(RBIC_type) & " from MEMB(s) " & RBIC_group_02 & ", Retrospective, ($" & RBIC02_retro_amt & "); "
+		IF left(RBIC03_pro_amt, 1) <> "_" THEN variable_name_for_RBIC = variable_name_for_RBIC & "RBIC: " & trim(RBIC_type) & " from MEMB(s) " & RBIC_group_03 & ", Prospective, ($" & RBIC03_pro_amt & "); "
+		IF left(RBIC03_retro_amt, 1) <> "_" THEN variable_name_for_RBIC = variable_name_for_RBIC & "RBIC: " & trim(RBIC_type) & " from MEMB(s) " & RBIC_group_03 & ", Retrospective, ($" & RBIC03_retro_amt & "); "
+		variable_name_for_RBIC = variable_name_for_RBIC & "RBIC Expenses:; " & total_RBIC_expenses
+	End if
 End function
 
 Function add_REST_to_variable(x) 'x represents the name of the variable (example: assets vs. spousal_assets)
