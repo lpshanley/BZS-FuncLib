@@ -176,6 +176,11 @@ Function add_BUSI_to_variable(variable_name_for_BUSI) 'x represents the name of 
 		If BUSI_type = "08" then BUSI_type = "Rental Income"
 		If BUSI_type = "09" then BUSI_type = "Other"
 		
+		'Reading and converting BUSI Self employment method into human-readable 
+		EMReadScreen BUSI_method, 2, 16, 53
+		IF BUSI_method = "01" THEN BUSI_method = "50% Gross Income"
+		IF BUSI_method = "02" THEN BUSI_method = "Tax Forms"
+		
 		'Going to the Gross Income Calculation pop-up
 		EMWriteScreen "x", 6, 26
 		transmit
@@ -264,6 +269,14 @@ Function add_BUSI_to_variable(variable_name_for_BUSI) 'x represents the name of 
 		If BUSI_SNAP_pro_amt <> "0.00" then variable_name_for_BUSI = variable_name_for_BUSI & "- SNAP pro: $" & BUSI_SNAP_pro_amt & " budgeted, " & BUSI_SNAP_ver & "; "
 		If BUSI_HCA_amt <> "0.00" then variable_name_for_BUSI = variable_name_for_BUSI & "- HC Method A: $" & BUSI_HCA_amt & " budgeted, " & BUSI_HCA_ver & "; "
 		If BUSI_HCB_amt <> "0.00" then variable_name_for_BUSI = variable_name_for_BUSI & "- HC Method B: $" & BUSI_HCB_amt & " budgeted, " & BUSI_HCB_ver & "; "
+		'Checks to see if pre 01/15 or post 02/15 then decides what to put in case note based on what was found/needed on the self employment method.
+		If IsDate(BUSI_income_end_date) = false then
+			IF BUSI_method <> "__" or BUSI_method = "" THEN 
+				variable_name_for_BUSI = variable_name_for_BUSI & "- Self employment method: " & BUSI_method & "; "
+			Else
+				variable_name_for_BUSI = variable_name_for_BUSI & "- Self employment method: None; "
+			END IF
+		End if
 	End if
 End function
 
