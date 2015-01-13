@@ -2137,7 +2137,7 @@ end function
 
 Function worker_county_code_determination(worker_county_code_variable, two_digit_county_code_variable)		'Determines worker_county_code and two_digit_county_code for multi-county agencies and DHS staff
 	If left(code_from_installer, 2) = "PT" then 'special handling for Pine Tech
-		worker_county_code_variable = "PWTVS"
+		worker_county_code_variable = "PWVTS"
 	Else
 		If worker_county_code_variable = "MULTICOUNTY" then 
 			Do
