@@ -2152,63 +2152,68 @@ Function worker_county_code_determination(worker_county_code_variable, two_digit
 End function
 
 Function write_editbox_in_case_note(x, y, z) 'x is the header, y is the variable for the edit box which will be put in the case note, z is the length of spaces for the indent.
-  variable_array = split(y, " ")	
-  EMSendKey "* " & x & ": "		
-  For each x in variable_array			
-    EMGetCursor row, col 				
-    If (row = 17 and col + (len(x)) >= 80) or (row = 4 and col = 3) then		 
-	PF8													
-	EMReadScreen case_note_on_page_four, 20, 24, 2						
-	IF case_note_on_page_four = "A MAXIMUM OF 4 PAGES" THEN
-		PF7
-		PF7
-		PF7
-		EMReadScreen case_note_header, 70, 4, 3
-		DO
-			IF right(case_note_header, 1) = " " THEN case_note_header = left(case_note_header, (len(case_note_header) - 1))
-		LOOP UNTIL right(case_note_header, 1) <> " "
-		EMWriteScreen (case_note_header & " (1 of 2)"), 4, 3
-		PF3
-		PF9
-		EMWriteScreen (case_note_header & " (2 of 2)"), 4, 3
-		EMSendKey "<newline>"
-	END IF
-    End if
+	variable_array = split(y, " ")	
+	EMSendKey "* " & x & ": "		
+	For each x in variable_array			
+		EMGetCursor row, col 
+		If (row = 17 and col + (len(x)) >= 80) or (row = 4 and col = 3) then		 
+			PF8													
+			EMReadScreen case_note_on_page_four, 20, 24, 2						
+			IF case_note_on_page_four = "A MAXIMUM OF 4 PAGES" THEN
+				PF7
+				PF7
+				PF7
+				EMReadScreen case_note_header, 70, 4, 3
+				DO
+					IF right(case_note_header, 1) = " " THEN case_note_header = left(case_note_header, (len(case_note_header) - 1))
+				LOOP UNTIL right(case_note_header, 1) <> " "
+				EMWriteScreen (case_note_header & " (1 of 2)"), 4, 3
+				PF3
+				PF9
+				EMWriteScreen (case_note_header & " (2 of 2)"), 4, 3
+				EMSendKey "<newline>"
+				EMSendKey space(z)
+			END IF
+		'New stuff... Designed to put the indentation back into the case note so Sylvester Stallone has a cliff from which to hang
+		ELSEIF (((col + len(x)) >= 80) AND (row <> 17)) THEN
+			EMSendKey "<newline>"
+			EMSendKey space(z)
+		END IF
+		'...END of new stuff
 
-	EMSendKey x & " "
-	If right(x, 1) = ";" then 
-	EMSendKey "<backspace>" & "<backspace>" 
-	EMGetCursor row, col 
-	If row = 17 then
-		PF8
-		EMSendKey space(z)
-		Else
-			EMSendKey "<newline>" & space(z)
-		End if
-	End if
-  Next
-  EMSendKey "<newline>"
-  EMGetCursor row, col 
-  If (row = 17 and col + (len(x)) >= 80) or (row = 4 and col = 3) then
-    EMSendKey "<PF8>"
-    EMWaitReady 0, 0
-    EMReadScreen case_note_on_page_four, 20, 24, 2
-    IF case_note_on_page_four = "A MAXIMUM OF 4 PAGES" THEN
-      PF7
-      PF7
-      PF7
-      EMReadScreen case_note_header, 70, 4, 3
-      DO
-        IF right(case_note_header, 1) = " " THEN case_note_header = left(case_note_header, (len(case_note_header) - 1))
-	LOOP UNTIL right(case_note_header, 1) <> " "
-	EMWriteScreen (case_note_header & " (1 of 2)"), 4, 3
-	PF3
-	PF9
-	EMWriteScreen (case_note_header & " (2 of 2)"), 4, 3
+		EMSendKey x & " "
+		If right(x, 1) = ";" then 
+		EMSendKey "<backspace>" & "<backspace>" 
+		EMGetCursor row, col 
+			If row = 17 then
+				PF8
+				EMSendKey space(z)
+				Else
+					EMSendKey "<newline>" & space(z)
+				End if
+			End if
+	Next
+
 	EMSendKey "<newline>"
-    END IF
-
-  End if
+	EMGetCursor row, col 
+	If (row = 17 and col + (len(x)) >= 80) or (row = 4 and col = 3) then
+		PF8
+		EMReadScreen case_note_on_page_four, 20, 24, 2
+		IF case_note_on_page_four = "A MAXIMUM OF 4 PAGES" THEN
+		      PF7
+		      PF7
+		      PF7
+			EMReadScreen case_note_header, 70, 4, 3
+		      DO
+				IF right(case_note_header, 1) = " " THEN case_note_header = left(case_note_header, (len(case_note_header) - 1))
+			LOOP UNTIL right(case_note_header, 1) <> " "
+			EMWriteScreen (case_note_header & " (1 of 2)"), 4, 3
+			PF3
+			PF9
+			EMWriteScreen (case_note_header & " (2 of 2)"), 4, 3
+			EMSendKey "<newline>"
+		END IF
+	End if
 End function
 
 Function write_new_line_in_case_note(x)			'Most recent update enables the function to create a new case note when the case note goes over 4 pages.
