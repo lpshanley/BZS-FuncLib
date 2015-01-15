@@ -2158,37 +2158,30 @@ Function write_editbox_in_case_note(x, y, z) 'x is the header, y is the variable
     EMGetCursor row, col 				
     If (row = 17 and col + (len(x)) >= 80) or (row = 4 and col = 3) then		 
 	PF8													
-      EMWaitReady 0, 0
+	EMReadScreen case_note_on_page_four, 20, 24, 2						
+	IF case_note_on_page_four = "A MAXIMUM OF 4 PAGES" THEN
+		PF7
+		PF7
+		PF7
+		EMReadScreen case_note_header, 70, 4, 3
+		DO
+			IF right(case_note_header, 1) = " " THEN case_note_header = left(case_note_header, (len(case_note_header) - 1))
+		LOOP UNTIL right(case_note_header, 1) <> " "
+		EMWriteScreen (case_note_header & " (1 of 2)"), 4, 3
+		PF3
+		PF9
+		EMWriteScreen (case_note_header & " (2 of 2)"), 4, 3
+		EMSendKey "<newline>"
+	END IF
     End if
 
-		'new logic
-		EMGetCursor row, col										
-		If (row < 17 and col + (len(x)) >= 80) then EMSendKey "<newline>" & space(z)
-		If (row = 4 and col = 3) then EMSendKey space(z)
-		EMReadScreen case_note_on_page_four, 20, 24, 2						
-		IF case_note_on_page_four = "A MAXIMUM OF 4 PAGES" THEN
-			PF7
-			PF7
-			PF7
-			EMReadScreen case_note_header, 70, 4, 3
-			DO
-				IF right(case_note_header, 1) = " " THEN case_note_header = left(case_note_header, (len(case_note_header) - 1))
-			LOOP UNTIL right(case_note_header, 1) <> " "
-			EMWriteScreen (case_note_header & " (1 of 2)"), 4, 3
-			PF3
-			PF9
-			EMWriteScreen (case_note_header & " (2 of 2)"), 4, 3
-			EMSendKey "<newline>"
-		END IF
-
-		EMSendKey x & " "
-		If right(x, 1) = ";" then 
-		EMSendKey "<backspace>" & "<backspace>" 
-		EMGetCursor row, col 
-		If row = 17 then
-			EMSendKey "<PF8>"
-			EMWaitReady 0, 0
-			EMSendKey space(z)
+	EMSendKey x & " "
+	If right(x, 1) = ";" then 
+	EMSendKey "<backspace>" & "<backspace>" 
+	EMGetCursor row, col 
+	If row = 17 then
+		PF8
+		EMSendKey space(z)
 		Else
 			EMSendKey "<newline>" & space(z)
 		End if
@@ -2224,28 +2217,22 @@ Function write_new_line_in_case_note(x)			'Most recent update enables the functi
     EMGetCursor row, col
     If (row = 17 and col + (len(x)) >= 80) or (row = 4 and col = 3) then
 	PF8				
-      EMWaitReady 0, 0
-    End if
-
-		'new logic
-		EMGetCursor row, col
-		If (row < 17 and col + (len(x)) >= 80) then EMSendKey "<newline>"
-		If (row = 4 and col = 3) then EMSendKey space(z)
-		EMReadScreen case_note_on_page_four, 20, 24, 2						
-		IF case_note_on_page_four = "A MAXIMUM OF 4 PAGES" THEN
-			PF7
-			PF7
-			PF7
-			EMReadScreen case_note_header, 70, 4, 3
-			DO
-				IF right(case_note_header, 1) = " " THEN case_note_header = left(case_note_header, (len(case_note_header) - 1))
-			LOOP UNTIL right(case_note_header, 1) <> " "
-			EMWriteScreen (case_note_header & " (1 of 2)"), 4, 3
-			PF3
-			PF9
-			EMWriteScreen (case_note_header & " (2 of 2)"), 4, 3
-			EMSendKey "<newline>"
-		END IF
+	EMReadScreen case_note_on_page_four, 20, 24, 2						
+	IF case_note_on_page_four = "A MAXIMUM OF 4 PAGES" THEN
+		PF7
+		PF7
+		PF7
+		EMReadScreen case_note_header, 70, 4, 3
+		DO
+			IF right(case_note_header, 1) = " " THEN case_note_header = left(case_note_header, (len(case_note_header) - 1))
+		LOOP UNTIL right(case_note_header, 1) <> " "
+		EMWriteScreen (case_note_header & " (1 of 2)"), 4, 3
+		PF3
+		PF9
+		EMWriteScreen (case_note_header & " (2 of 2)"), 4, 3
+		EMSendKey "<newline>"
+		END IF    
+	End if
 
 		EMSendKey x & " "
 		If right(x, 1) = ";" then 
@@ -2282,6 +2269,7 @@ Function write_new_line_in_case_note(x)			'Most recent update enables the functi
 
   End if
 End function
+
 
 'Creates a new line in SPEC/MEMO
 Function write_new_line_in_SPEC_MEMO(variable_to_enter)
