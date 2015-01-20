@@ -1810,6 +1810,11 @@ function navigate_to_screen(x, y)
         EMSendKey "<enter>"
         EMWaitReady 0, 0
       End if
+	  EMReadScreen ERRR_screen_check, 4, 2, 52
+	  If ERRR_screen_check = "ERRR" then 
+	    EMSendKey "<enter>"
+        EMWaitReady 0, 0
+      End if
     End if
   End if
 End function
