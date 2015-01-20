@@ -1429,6 +1429,21 @@ function back_to_SELF
   Loop until SELF_check = "SELF"
 End function
 
+Function check_for_MAXIS(end_script)
+	Do
+		transmit
+		EMReadScreen MAXIS_check, 5, 1, 39
+		If MAXIS_check <> "MAXIS"  and MAXIS_check <> "AXIS " then 
+			If end_script = True then 
+				script_end_procedure("You do not appear to be in MAXIS. You may be passworded out. Please check your MAXIS screen and try again.")
+			Else
+				warning_box = MsgBox("You do not appear to be in MAXIS. You may be passworded out. Please check your MAXIS screen and try again, or press ""cancel"" to exit the script.", vbOKCancel)
+				If warning_box = vbCancel then stopscript
+			End if
+		End if
+	Loop until MAXIS_check = "MAXIS" or MAXIS_check = "AXIS "
+End function
+
 'This function converts a numeric digit to an Excel column, up to 104 digits (columns).
 function convert_digit_to_excel_column(col_in_excel)
 	'Create string with the alphabet
@@ -1591,21 +1606,6 @@ End function
 '-----------DEPRECIATED AS OF 01/20/2015. LEFT IN HERE FOR COMPATIBILITY PURPOSES.
 Function maxis_check_function
 	call MAXIS_check(True)	'Always true, because the original function always exited, and this needs to match the original function for reverse compatibility reasons.
-End function
-
-Function MAXIS_check(end_script)
-	Do
-		transmit
-		EMReadScreen MAXIS_check, 5, 1, 39
-		If MAXIS_check <> "MAXIS"  and MAXIS_check <> "AXIS " then 
-			If end_script = True then 
-				script_end_procedure("You do not appear to be in MAXIS. You may be passworded out. Please check your MAXIS screen and try again.")
-			Else
-				warning_box = MsgBox("You do not appear to be in MAXIS. You may be passworded out. Please check your MAXIS screen and try again, or press ""cancel"" to exit the script.", vbOKCancel)
-				If warning_box = vbCancel then stopscript
-			End if
-		End if
-	Loop until MAXIS_check = "MAXIS" or MAXIS_check = "AXIS "
 End function
 
 Function HH_member_custom_dialog(HH_member_array)
