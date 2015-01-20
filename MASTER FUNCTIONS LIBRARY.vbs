@@ -1521,7 +1521,6 @@ Function create_panel_if_nonexistent()
 	End If
 End Function
 
-'-------------------THIS IS NOW DEPRECIATED AS THE NAVIGATE_TO_SCREEN DOES THIS. A FIND/REPLACE SHOULD BE EXECUTED ON THE SCRIPTS TO REMOVE IT FROM EXISTENCE
 Function ERRR_screen_check 'Checks for error prone cases
 	EMReadScreen ERRR_check, 4, 2, 52
 	If ERRR_check = "ERRR" then transmit
@@ -1542,20 +1541,20 @@ End function
 
 'This function fixes the case for a phrase. For example, "ROBERT P. ROBERTSON" becomes "Robert P. Robertson". 
 '	It capitalizes the first letter of each word.
-Function fix_case(phrase_to_split, smallest_length_to_skip)										'Ex: fix_case(client_name, 3), where 3 means skip words that are 3 characters or shorter
-	phrase_to_split = split(phrase_to_split)													'splits phrase into an array
-	For each word in phrase_to_split															'processes each word independently
-		If word <> "" then																		'Skip blanks
-			first_character = ucase(left(word, 1))												'grabbing the first character of the string, making uppercase and adding to variable
-			remaining_characters = LCase(right(word, len(word) -1))								'grabbing the remaining characters of the string, making lowercase and adding to variable
-			If len(word) > smallest_length_to_skip then											'skip any strings shorter than the smallest_length_to_skip variable
-				output_phrase = output_phrase & first_character & remaining_characters & " "	'output_phrase is the output of the function, this combines the first_character and remaining_characters
+Function fix_case(phrase_to_split, smallest_length_to_skip)									'Ex: fix_case(client_name, 3), where 3 means skip words that are 3 characters or shorter
+	phrase_to_split = split(phrase_to_split)											'splits phrase into an array
+	For each word in phrase_to_split												'processes each word independently
+		If word <> "" then													'Skip blanks
+			first_character = ucase(left(word, 1))									'grabbing the first character of the string, making uppercase and adding to variable
+			remaining_characters = LCase(right(word, len(word) -1))						'grabbing the remaining characters of the string, making lowercase and adding to variable
+			If len(word) > smallest_length_to_skip then								'skip any strings shorter than the smallest_length_to_skip variable
+				output_phrase = output_phrase & first_character & remaining_characters & " "		'output_phrase is the output of the function, this combines the first_character and remaining_characters
 			Else															
-				output_phrase = output_phrase & word & " "										'just pops the whole word in if it's shorter than the smallest_length_to_skip variable
+				output_phrase = output_phrase & word & " "							'just pops the whole word in if it's shorter than the smallest_length_to_skip variable
 			End if
 		End if
 	Next
-	phrase_to_split = output_phrase																'making the phrase_to_split equal to the output, so that it can be used by the rest of the script.
+	phrase_to_split = output_phrase												'making the phrase_to_split equal to the output, so that it can be used by the rest of the script.
 End function
 
 Function get_to_MMIS_session_begin
@@ -1565,6 +1564,7 @@ Function get_to_MMIS_session_begin
     EMReadScreen session_start, 18, 1, 7
   Loop until session_start = "SESSION TERMINATED"
 End function
+
 
 Function MAXIS_background_check
 	Do
@@ -1588,24 +1588,11 @@ Function MAXIS_case_number_finder(variable_for_MAXIS_case_number)
 	End if
 End function
 
-'-----------DEPRECIATED AS OF 01/20/2015. LEFT IN HERE FOR COMPATIBILITY PURPOSES.
+'This function confirms that we're in MAXIS. If we aren't, it will stop.
 Function maxis_check_function
-	call MAXIS_check(True)	'Always true, because the original function always exited, and this needs to match the original function for reverse compatibility reasons.
-End function
-
-Function MAXIS_check(end_script)
-	Do
-		transmit
-		EMReadScreen MAXIS_check, 5, 1, 39
-		If MAXIS_check <> "MAXIS"  and MAXIS_check <> "AXIS " then 
-			If end_script = True then 
-				script_end_procedure("You do not appear to be in MAXIS. You may be passworded out. Please check your MAXIS screen and try again.")
-			Else
-				warning_box = MsgBox("You do not appear to be in MAXIS. You may be passworded out. Please check your MAXIS screen and try again, or press ""cancel"" to exit the script.", vbOKCancel)
-				If warning_box = vbCancel then stopscript
-			End if
-		End if
-	Loop until MAXIS_check = "MAXIS" or MAXIS_check = "AXIS "
+	transmit
+	EMReadScreen MAXIS_check, 5, 1, 39
+	If MAXIS_check <> "MAXIS"  and MAXIS_check <> "AXIS " then script_end_procedure("You do not appear to be in MAXIS. You may be passworded out. Please check your MAXIS screen and try again.")
 End function
 
 Function HH_member_custom_dialog(HH_member_array)
@@ -1777,6 +1764,7 @@ Function MMIS_RKEY_finder
   EMSendKey "<enter>"
   EMWaitReady 0, 0
 End function
+
 
 function navigate_to_screen(x, y)
   EMSendKey "<enter>"
@@ -2181,12 +2169,12 @@ Function worker_county_code_determination(worker_county_code_variable, two_digit
 	End if
 End function
 
-Function write_bullet_and_variable_in_case_note(bullet, variable)
-	variable_array = split(variable, " ")	
-	EMSendKey "* " & bullet & ": "		
-	For each bullet in variable_array			
+Function write_editbox_in_case_note(x, y, z) 'x is the header, y is the variable for the edit box which will be put in the case note, z is the length of spaces for the indent.
+	variable_array = split(y, " ")	
+	EMSendKey "* " & x & ": "		
+	For each x in variable_array			
 		EMGetCursor row, col 
-		If (row = 17 and col + (len(bullet)) >= 80) or (row = 4 and col = 3) then		 
+		If (row = 17 and col + (len(x)) >= 80) or (row = 4 and col = 3) then		 
 			PF8													
 			EMReadScreen case_note_on_page_four, 20, 24, 2						
 			IF case_note_on_page_four = "A MAXIMUM OF 4 PAGES" THEN
@@ -2202,31 +2190,31 @@ Function write_bullet_and_variable_in_case_note(bullet, variable)
 				PF9
 				EMWriteScreen (case_note_header & " (2 of 2)"), 4, 3
 				EMSendKey "<newline>"
-				EMSendKey space(6)
+				EMSendKey space(z)
 			END IF
 		'New stuff... Designed to put the indentation back into the case note so Sylvester Stallone has a cliff from which to hang
-		ELSEIF (((col + len(bullet)) >= 80) AND (row <> 17)) THEN
+		ELSEIF (((col + len(x)) >= 80) AND (row <> 17)) THEN
 			EMSendKey "<newline>"
-			EMSendKey space(6)
+			EMSendKey space(z)
 		END IF
 		'...END of new stuff
 
-		EMSendKey bullet & " "
-		If right(bullet, 1) = ";" then 
+		EMSendKey x & " "
+		If right(x, 1) = ";" then 
 		EMSendKey "<backspace>" & "<backspace>" 
 		EMGetCursor row, col 
 			If row = 17 then
 				PF8
-				EMSendKey space(6)
+				EMSendKey space(z)
 				Else
-					EMSendKey "<newline>" & space(6)
+					EMSendKey "<newline>" & space(z)
 				End if
 			End if
 	Next
 
 	EMSendKey "<newline>"
 	EMGetCursor row, col 
-	If (row = 17 and col + (len(bullet)) >= 80) or (row = 4 and col = 3) then
+	If (row = 17 and col + (len(x)) >= 80) or (row = 4 and col = 3) then
 		PF8
 		EMReadScreen case_note_on_page_four, 20, 24, 2
 		IF case_note_on_page_four = "A MAXIMUM OF 4 PAGES" THEN
@@ -2246,19 +2234,87 @@ Function write_bullet_and_variable_in_case_note(bullet, variable)
 	End if
 End function
 
-'-----------DEPRECIATED AS OF 01/20/2015. LEFT IN HERE FOR COMPATIBILITY PURPOSES.
-Function write_editbox_in_case_note(bullet, variable, length_of_indent) 'length_of_indent is depreciated
-	call write_bullet_and_variable_in_case_note(bullet, variable)
+Function write_new_line_in_case_note(x)			'Most recent update enables the function to create a new case note when the case note goes over 4 pages.
+  variable_array = split(x, " ")
+  For each x in variable_array
+    EMGetCursor row, col
+    If (row = 17 and col + (len(x)) >= 80) or (row = 4 and col = 3) then
+	PF8				
+	EMReadScreen case_note_on_page_four, 20, 24, 2						
+	IF case_note_on_page_four = "A MAXIMUM OF 4 PAGES" THEN
+		PF7
+		PF7
+		PF7
+		EMReadScreen case_note_header, 70, 4, 3
+		DO
+			IF right(case_note_header, 1) = " " THEN case_note_header = left(case_note_header, (len(case_note_header) - 1))
+		LOOP UNTIL right(case_note_header, 1) <> " "
+		EMWriteScreen (case_note_header & " (1 of 2)"), 4, 3
+		PF3
+		PF9
+		EMWriteScreen (case_note_header & " (2 of 2)"), 4, 3
+		EMSendKey "<newline>"
+		END IF    
+	End if
+
+		EMSendKey x & " "
+		If right(x, 1) = ";" then 
+		EMSendKey "<backspace>" & "<backspace>" 
+		EMGetCursor row, col 
+		If row = 17 then
+			EMSendKey "<PF8>"
+			EMWaitReady 0, 0
+		Else
+			EMSendKey "<newline>"
+		End if
+	End if
+  Next
+  EMSendKey "<newline>"
+  EMGetCursor row, col 
+  If (row = 17 and col + (len(x)) >= 80) or (row = 4 and col = 3) then
+    EMSendKey "<PF8>"
+    EMWaitReady 0, 0
+    EMReadScreen case_note_on_page_four, 20, 24, 2
+    IF case_note_on_page_four = "A MAXIMUM OF 4 PAGES" THEN
+      PF7
+      PF7
+      PF7
+      EMReadScreen case_note_header, 70, 4, 3
+      DO
+        IF right(case_note_header, 1) = " " THEN case_note_header = left(case_note_header, (len(case_note_header) - 1))
+	LOOP UNTIL right(case_note_header, 1) <> " "
+	EMWriteScreen (case_note_header & " (1 of 2)"), 4, 3
+	PF3
+	PF9
+	EMWriteScreen (case_note_header & " (2 of 2)"), 4, 3
+	EMSendKey "<newline>"
+    END IF
+
+  End if
 End function
 
-'-----------DEPRECIATED AS OF 01/20/2015. LEFT IN HERE FOR COMPATIBILITY PURPOSES.
-Function write_new_line_in_case_note(variable)
-	call write_variable_in_CASE_NOTE(variable)
-End function
 
-'-----------DEPRECIATED AS OF 01/20/2015. LEFT IN HERE FOR COMPATIBILITY PURPOSES.
+'Creates a new line in SPEC/MEMO
 Function write_new_line_in_SPEC_MEMO(variable_to_enter)
-	call write_variable_in_SPEC_MEMO(variable_to_enter)
+  variable_array = split(variable_to_enter, " ")					'Each word becomes its own member of the array called variable_array.
+  For each word in variable_array 
+    EMGetCursor row, col 									'Needs the cursor in order to know if it's going to "overflow".
+    If (row = 17 and col + (len(word)) >= 75) then					'If we're on the last possible row, and the current column + length of the current word goes over the last possible column for writing, then...
+      EMSendKey "<PF8>"										'Send an F8!
+      EMWaitReady 0, 0
+    End if
+    EMReadScreen max_check, 12, 24, 2							'Checks to see if we've maxed out our possible screens.
+    If max_check = "END OF INPUT" then exit for						'Quits the for...next if we've maxed out.
+    EMGetCursor row, col 									'Grabs the cursor again.
+    If (row < 17 and col + (len(word)) >= 75) then EMSendKey "<newline>"	'If we're before the last possible row, and the current column + length of the current word goes over the last possible column for writing, then send a newline.
+    EMSendKey word & " "									'Now, after all of the above logic, it can actually send the word, and a space.
+  Next												'It'll do this for every word in the variable_array.
+  EMSendKey "<newline>"										'Once all of the words are sent, it sends a newline.
+  EMGetCursor row, col 										'Grabs the cursor yet again.
+  If row = 3 and col = 15 then								'If we're at the beginning of a page (meaning we "rolled over" on possible characters on this screen, then...
+    EMSendKey "<PF8>"										'Send an F8!
+    EMWaitReady 0, 0
+  End if
 End function
 
 Function write_three_columns_in_case_note(col_01_start_point, col_01_variable, col_02_start_point, col_02_variable, col_03_start_point, col_03_variable)
@@ -2284,106 +2340,20 @@ Function write_three_columns_in_case_note(col_01_start_point, col_01_variable, c
   End if
 End function
 
-'-----------DEPRECIATED AS OF 01/20/2015. LEFT IN HERE FOR COMPATIBILITY PURPOSES.
-FUNCTION write_TIKL_function(variable)
-	call write_variable_in_TIKL(variable)
-END FUNCTION
-
-Function write_variable_in_CASE_NOTE(variable)
-  variable_array = split(variable, " ")
-  For each variable in variable_array
-    EMGetCursor row, col
-    If (row = 17 and col + (len(variable)) >= 80) or (row = 4 and col = 3) then
-	PF8				
-	EMReadScreen case_note_on_page_four, 20, 24, 2						
-	IF case_note_on_page_four = "A MAXIMUM OF 4 PAGES" THEN
-		PF7
-		PF7
-		PF7
-		EMReadScreen case_note_header, 70, 4, 3
-		DO
-			IF right(case_note_header, 1) = " " THEN case_note_header = left(case_note_header, (len(case_note_header) - 1))
-		LOOP UNTIL right(case_note_header, 1) <> " "
-		EMWriteScreen (case_note_header & " (1 of 2)"), 4, 3
-		PF3
-		PF9
-		EMWriteScreen (case_note_header & " (2 of 2)"), 4, 3
-		EMSendKey "<newline>"
-		END IF    
-	End if
-
-		EMSendKey variable & " "
-		If right(variable, 1) = ";" then 
-		EMSendKey "<backspace>" & "<backspace>" 
-		EMGetCursor row, col 
-		If row = 17 then
-			EMSendKey "<PF8>"
-			EMWaitReady 0, 0
-		Else
-			EMSendKey "<newline>"
-		End if
-	End if
-  Next
-  EMSendKey "<newline>"
-  EMGetCursor row, col 
-  If (row = 17 and col + (len(variable)) >= 80) or (row = 4 and col = 3) then
-    EMSendKey "<PF8>"
-    EMWaitReady 0, 0
-    EMReadScreen case_note_on_page_four, 20, 24, 2
-    IF case_note_on_page_four = "A MAXIMUM OF 4 PAGES" THEN
-      PF7
-      PF7
-      PF7
-      EMReadScreen case_note_header, 70, 4, 3
-      DO
-        IF right(case_note_header, 1) = " " THEN case_note_header = left(case_note_header, (len(case_note_header) - 1))
-	LOOP UNTIL right(case_note_header, 1) <> " "
-	EMWriteScreen (case_note_header & " (1 of 2)"), 4, 3
-	PF3
-	PF9
-	EMWriteScreen (case_note_header & " (2 of 2)"), 4, 3
-	EMSendKey "<newline>"
-    END IF
-
-  End if
-End function
-
-Function write_variable_in_SPEC_MEMO(variable)
-  variable_array = split(variable, " ")					'Each word becomes its own member of the array called variable_array.
-  For each word in variable_array 
-    EMGetCursor row, col 									'Needs the cursor in order to know if it's going to "overflow".
-    If (row = 17 and col + (len(word)) >= 75) then					'If we're on the last possible row, and the current column + length of the current word goes over the last possible column for writing, then...
-      EMSendKey "<PF8>"										'Send an F8!
-      EMWaitReady 0, 0
-    End if
-    EMReadScreen max_check, 12, 24, 2							'Checks to see if we've maxed out our possible screens.
-    If max_check = "END OF INPUT" then exit for						'Quits the for...next if we've maxed out.
-    EMGetCursor row, col 									'Grabs the cursor again.
-    If (row < 17 and col + (len(word)) >= 75) then EMSendKey "<newline>"	'If we're before the last possible row, and the current column + length of the current word goes over the last possible column for writing, then send a newline.
-    EMSendKey word & " "									'Now, after all of the above logic, it can actually send the word, and a space.
-  Next												'It'll do this for every word in the variable_array.
-  EMSendKey "<newline>"										'Once all of the words are sent, it sends a newline.
-  EMGetCursor row, col 										'Grabs the cursor yet again.
-  If row = 3 and col = 15 then								'If we're at the beginning of a page (meaning we "rolled over" on possible characters on this screen, then...
-    EMSendKey "<PF8>"										'Send an F8!
-    EMWaitReady 0, 0
-  End if
-End function
-
-Function write_variable_in_TIKL(variable)
-	IF len(variable) <= 60 THEN
-		tikl_line_one = variable
+FUNCTION write_TIKL_function(tikl_text)
+	IF len(tikl_text) <= 60 THEN
+		tikl_line_one = tikl_text
 	ELSE
 		tikl_line_one_len = 61
-		tikl_line_one = left(variable, tikl_line_one_len)
+		tikl_line_one = left(tikl_text, tikl_line_one_len)
 		IF right(tikl_line_one, 1) = " " THEN
-			whats_left_after_one = right(variable, (len(variable) - tikl_line_one_len))
+			whats_left_after_one = right(tikl_text, (len(tikl_text) - tikl_line_one_len))
 		ELSE
 			DO
-				tikl_line_one = left(variable, (tikl_line_one_len - 1))
+				tikl_line_one = left(tikl_text, (tikl_line_one_len - 1))
 				IF right(tikl_line_one, 1) <> " " THEN tikl_line_one_len = tikl_line_one_len - 1
 			LOOP UNTIL right(tikl_line_one, 1) = " "
-			whats_left_after_one = right(variable, (len(variable) - (tikl_line_one_len - 1)))
+			whats_left_after_one = right(tikl_text, (len(tikl_text) - (tikl_line_one_len - 1)))
 		END IF
 	END IF
 
@@ -2441,5 +2411,5 @@ Function write_variable_in_TIKL(variable)
 	IF tikl_line_four <> "" THEN EMWriteScreen tikl_line_four, 12, 3
 	IF tikl_line_five <> "" THEN EMWriteScreen tikl_line_five, 13, 3
 	transmit
-End function
+END FUNCTION
 
