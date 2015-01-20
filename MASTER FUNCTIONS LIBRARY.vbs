@@ -1605,7 +1605,7 @@ End function
 
 '-----------DEPRECIATED AS OF 01/20/2015. LEFT IN HERE FOR COMPATIBILITY PURPOSES.
 Function maxis_check_function
-	call MAXIS_check(True)	'Always true, because the original function always exited, and this needs to match the original function for reverse compatibility reasons.
+	call check_for_MAXIS(True)	'Always true, because the original function always exited, and this needs to match the original function for reverse compatibility reasons.
 End function
 
 Function HH_member_custom_dialog(HH_member_array)
