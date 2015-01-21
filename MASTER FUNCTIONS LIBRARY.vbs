@@ -2294,7 +2294,9 @@ Function write_variable_in_CASE_NOTE(variable)
   For each variable in variable_array
     EMGetCursor row, col
     If (row = 17 and col + (len(variable)) >= 80) or (row = 4 and col = 3) then
-	PF8				
+		EMReadScreen line_one, 40, 4, 3
+		line_one = replace(line_one, " ", "")
+		IF line_one <> "" THEN PF8				
 	EMReadScreen case_note_on_page_four, 20, 24, 2						
 	IF case_note_on_page_four = "A MAXIMUM OF 4 PAGES" THEN
 		PF7
@@ -2327,8 +2329,9 @@ Function write_variable_in_CASE_NOTE(variable)
   EMSendKey "<newline>"
   EMGetCursor row, col 
   If (row = 17 and col + (len(variable)) >= 80) or (row = 4 and col = 3) then
-    EMSendKey "<PF8>"
-    EMWaitReady 0, 0
+  		EMReadScreen line_one, 40, 4, 3
+		line_one = replace(line_one, " ", "")
+		IF line_one <> "" THEN PF8
     EMReadScreen case_note_on_page_four, 20, 24, 2
     IF case_note_on_page_four = "A MAXIMUM OF 4 PAGES" THEN
       PF7
