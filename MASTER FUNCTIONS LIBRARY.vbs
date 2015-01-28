@@ -2446,3 +2446,9 @@ Function write_variable_in_TIKL(variable)
 	transmit
 End function
 
+'<<<<<<<<<<<<THESE VARIABLES ARE TEMPORARY, DESIGNED TO KEEP CERTAIN COUNTIES FROM ACCIDENTALLY JOINING THE BETA, DUE TO A GLITCH IN THE INSTALLER WHICH WAS CORRECTED IN VERSION 1.3.1
+If beta_agency = True then 
+	If worker_county_code = "x101" then 
+		script_repository = "https://raw.githubusercontent.com/MN-Script-Team/DHS-MAXIS-Scripts/RELEASE/Script Files/"
+	End if
+End if
