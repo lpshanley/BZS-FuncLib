@@ -44,6 +44,10 @@ OK = -1			'Value for OK button in dialogs
 
 'BELOW ARE THE ACTUAL FUNCTIONS----------------------------------------------------------------------------------------------------
 
+Function magic_escape_string(str)
+	magic_escape_string = replace(str,"@","@@") ' This allows use of the @ symbol for EMSendkey
+End Function
+
 Function add_ACCI_to_variable(x) 'x represents the name of the variable (example: assets vs. spousal_assets)
   EMReadScreen ACCI_date, 8, 6, 73
   ACCI_date = replace(ACCI_date, " ", "/")
