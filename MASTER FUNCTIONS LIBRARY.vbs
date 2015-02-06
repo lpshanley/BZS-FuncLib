@@ -947,6 +947,7 @@ Function autofill_editbox_from_MAXIS(HH_member_array, panel_read_from, variable_
   Elseif panel_read_from = "FMED" then '----------------------------------------------------------------------------------------------------FMED
     For each HH_member in HH_member_array
       call navigate_to_screen("stat", "fmed")
+	  ERRR_screen_check
       EMWriteScreen HH_member, 20, 76
       EMWriteScreen "01", 20, 79
       transmit
@@ -955,11 +956,18 @@ Function autofill_editbox_from_MAXIS(HH_member_array, panel_read_from, variable_
       If fmed_total <> 0 then 
         If HH_member <> "01" then variable_written_to = variable_written_to & "Member " & HH_member & "- "
         Do
+		  use_expense = False					'<--- Used to determine if an FMED expense that has an end date is going to be counted.
           EMReadScreen fmed_type, 2, fmed_row, 25
           EMReadScreen fmed_proof, 2, fmed_row, 32
           EMReadScreen fmed_amt, 8, fmed_row, 70
 		  EMReadScreen fmed_end_date, 5, fmed_row, 60		'reading end date to see if this one even gets added.
-		  If fmed_end_date = "__ __" then					'Skips entries with an end date.
+		  IF fmed_end_date <> "__ __" THEN
+			fmed_end_date = replace(fmed_end_date, " ", "/01/")
+			fmed_end_date = dateadd("M", 1, fmed_end_date)
+			fmed_end_date = dateadd("D", -1, fmed_end_date)
+			IF datediff("D", date, fmed_end_date) > 0 THEN use_expense = True		'<--- If the end date of the FMED expense is the current month or a future month, the expense is going to be counted.
+		  END IF
+		  If fmed_end_date = "__ __" OR use_expense = TRUE then					'Skips entries with an end date or end dates in the past.
             If fmed_proof = "__" or fmed_proof = "?_" or fmed_proof = "NO" then 
               fmed_proof = ", no proof provided"
             Else
@@ -984,6 +992,11 @@ Function autofill_editbox_from_MAXIS(HH_member_array, panel_read_from, variable_
             If fmed_type = "12" then fmed_type = "Medical Trans/Mileage Calc"
             If fmed_type = "15" then fmed_type = "Medi Part D premium"
             If fmed_type <> "__" then variable_written_to = variable_written_to & fmed_type & fmed_amt & fmed_proof & "; "
+			IF fmed_end_date <> "__ __" THEN					'<--- If there is a counted FMED expense with a future end date, the script will modify the way that end date is displayed.
+				fmed_end_date = datepart("M", fmed_end_date) & "/" & right(datepart("YYYY", fmed_end_date), 2)		'<--- Begins pulling apart fmed_end_date to format it to human speak.
+				IF left(fmed_end_date, 1) <> "0" THEN fmed_end_date = "0" & fmed_end_date
+				variable_written_to = left(variable_written_to, len(variable_written_to) - 2) & ", counted through " & fmed_end_date & "; "			'<--- Putting variable_written_to back together with FMED expense end date information.
+			END IF	
           End if
           fmed_row = fmed_row + 1
           If fmed_row = 15 then
