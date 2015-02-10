@@ -44,6 +44,10 @@ OK = -1			'Value for OK button in dialogs
 
 'BELOW ARE THE ACTUAL FUNCTIONS----------------------------------------------------------------------------------------------------
 
+Function magic_escape_string(str)
+	magic_escape_string = replace(str,"@","@@") ' This allows use of the @ symbol for EMSendkey
+End Function
+
 Function add_ACCI_to_variable(x) 'x represents the name of the variable (example: assets vs. spousal_assets)
   EMReadScreen ACCI_date, 8, 6, 73
   ACCI_date = replace(ACCI_date, " ", "/")
@@ -267,8 +271,14 @@ Function add_BUSI_to_variable(variable_name_for_BUSI) 'x represents the name of 
 		If BUSI_IVE_amt <> "0.00" then variable_name_for_BUSI = variable_name_for_BUSI & "- IV-E: $" & BUSI_IVE_amt & " budgeted, " & BUSI_IVE_ver & "; "
 		If BUSI_SNAP_retro_amt <> "0.00" then variable_name_for_BUSI = variable_name_for_BUSI & "- SNAP retro: $" & BUSI_SNAP_retro_amt & " budgeted, " & BUSI_SNAP_ver & "; "
 		If BUSI_SNAP_pro_amt <> "0.00" then variable_name_for_BUSI = variable_name_for_BUSI & "- SNAP pro: $" & BUSI_SNAP_pro_amt & " budgeted, " & BUSI_SNAP_ver & "; "
-		If BUSI_HCA_amt <> "0.00" then variable_name_for_BUSI = variable_name_for_BUSI & "- HC Method A: $" & BUSI_HCA_amt & " budgeted, " & BUSI_HCA_ver & "; "
-		If BUSI_HCB_amt <> "0.00" then variable_name_for_BUSI = variable_name_for_BUSI & "- HC Method B: $" & BUSI_HCB_amt & " budgeted, " & BUSI_HCB_ver & "; "
+		'Leaving out HC income estimator if footer month is not Current month + 1
+		current_month_for_hc_est = dateadd("m", "1", date)
+		current_month_for_hc_est = datepart("m", current_month_for_hc_est)
+		IF len(current_month_for_hc_est) = 1 THEN current_month_for_hc_est = "0" & current_month_for_hc_est
+		IF footer_month = current_month_for_hc_est THEN
+			If BUSI_HCA_amt <> "0.00" then variable_name_for_BUSI = variable_name_for_BUSI & "- HC Method A: $" & BUSI_HCA_amt & " budgeted, " & BUSI_HCA_ver & "; "
+			If BUSI_HCB_amt <> "0.00" then variable_name_for_BUSI = variable_name_for_BUSI & "- HC Method B: $" & BUSI_HCB_amt & " budgeted, " & BUSI_HCB_ver & "; "
+		END IF
 		'Checks to see if pre 01/15 or post 02/15 then decides what to put in case note based on what was found/needed on the self employment method.
 		If IsDate(BUSI_income_end_date) = false then
 			IF BUSI_method <> "__" or BUSI_method = "" THEN 
@@ -359,8 +369,14 @@ Function add_JOBS_to_variable(variable_name_for_JOBS) 'x represents the name of 
     If SNAP_JOBS_amt <> "" then variable_name_for_JOBS = variable_name_for_JOBS & "- PIC: $" & SNAP_JOBS_amt & "/" & snap_pay_frequency & ", calculated " & date_of_pic_calc & "; "
     If retro_JOBS_amt <> "" then variable_name_for_JOBS = variable_name_for_JOBS & "- Retrospective: $" & retro_JOBS_amt & " total; "
     IF prospective_JOBS_amt <> "" THEN variable_name_for_JOBS = variable_name_for_JOBS & "- Prospective: $" & prospective_JOBS_amt & " total; "
-    IF HC_JOBS_amt <> "________" THEN variable_name_for_JOBS = variable_name_for_JOBS & "- HC Inc Est: $" & HC_JOBS_amt & "/" & pay_frequency & "; "
-    If JOBS_ver = "N" or JOBS_ver = "?" then variable_name_for_JOBS = variable_name_for_JOBS & "- No proof provided for this panel; "
+    'Leaving out HC income estimator if footer month is not Current month + 1
+    current_month_for_hc_est = dateadd("m", "1", date)
+    current_month_for_hc_est = datepart("m", current_month_for_hc_est)
+    IF len(current_month_for_hc_est) = 1 THEN current_month_for_hc_est = "0" & current_month_for_hc_est
+    IF footer_month = current_month_for_hc_est THEN 
+	IF HC_JOBS_amt <> "________" THEN variable_name_for_JOBS = variable_name_for_JOBS & "- HC Inc Est: $" & HC_JOBS_amt & "/" & pay_frequency & "; "
+    END IF
+	If JOBS_ver = "N" or JOBS_ver = "?" then variable_name_for_JOBS = variable_name_for_JOBS & "- No proof provided for this panel; "
   End if
 End function
 
@@ -551,7 +567,13 @@ Function add_UNEA_to_variable(variable_name_for_UNEA) 'x represents the name of 
     If SNAP_UNEA_amt <> "" THEN variable_name_for_UNEA = variable_name_for_UNEA & "- PIC: $" & SNAP_UNEA_amt & "/" & snap_pay_frequency & ", calculated " & date_of_pic_calc & "; "
     If retro_UNEA_amt <> "" THEN variable_name_for_UNEA = variable_name_for_UNEA & "- Retrospective: $" & retro_UNEA_amt & " total; "
     If prosp_UNEA_amt <> "" THEN variable_name_for_UNEA = variable_name_for_UNEA & "- Prospective: $" & prosp_UNEA_amt & " total; "
-    If HC_UNEA_amt <> "" THEN variable_name_for_UNEA = variable_name_for_UNEA & "- HC Inc Est: $" & HC_UNEA_amt & "/" & pay_frequency & "; "
+    'Leaving out HC income estimator if footer month is not Current month + 1
+    current_month_for_hc_est = dateadd("m", "1", date)
+    current_month_for_hc_est = datepart("m", current_month_for_hc_est)
+    IF len(current_month_for_hc_est) = 1 THEN current_month_for_hc_est = "0" & current_month_for_hc_est
+    IF footer_month = current_month_for_hc_est THEN
+    	If HC_UNEA_amt <> "" THEN variable_name_for_UNEA = variable_name_for_UNEA & "- HC Inc Est: $" & HC_UNEA_amt & "/" & pay_frequency & "; "
+    END IF
     If UNEA_ver = "N" or UNEA_ver = "?" then variable_name_for_UNEA = variable_name_for_UNEA & "- No proof provided for this panel; "
   End if
 End function
@@ -947,6 +969,7 @@ Function autofill_editbox_from_MAXIS(HH_member_array, panel_read_from, variable_
   Elseif panel_read_from = "FMED" then '----------------------------------------------------------------------------------------------------FMED
     For each HH_member in HH_member_array
       call navigate_to_screen("stat", "fmed")
+	  ERRR_screen_check
       EMWriteScreen HH_member, 20, 76
       EMWriteScreen "01", 20, 79
       transmit
@@ -955,11 +978,18 @@ Function autofill_editbox_from_MAXIS(HH_member_array, panel_read_from, variable_
       If fmed_total <> 0 then 
         If HH_member <> "01" then variable_written_to = variable_written_to & "Member " & HH_member & "- "
         Do
+		  use_expense = False					'<--- Used to determine if an FMED expense that has an end date is going to be counted.
           EMReadScreen fmed_type, 2, fmed_row, 25
           EMReadScreen fmed_proof, 2, fmed_row, 32
           EMReadScreen fmed_amt, 8, fmed_row, 70
 		  EMReadScreen fmed_end_date, 5, fmed_row, 60		'reading end date to see if this one even gets added.
-		  If fmed_end_date = "__ __" then					'Skips entries with an end date.
+		  IF fmed_end_date <> "__ __" THEN
+			fmed_end_date = replace(fmed_end_date, " ", "/01/")
+			fmed_end_date = dateadd("M", 1, fmed_end_date)
+			fmed_end_date = dateadd("D", -1, fmed_end_date)
+			IF datediff("D", date, fmed_end_date) > 0 THEN use_expense = True		'<--- If the end date of the FMED expense is the current month or a future month, the expense is going to be counted.
+		  END IF
+		  If fmed_end_date = "__ __" OR use_expense = TRUE then					'Skips entries with an end date or end dates in the past.
             If fmed_proof = "__" or fmed_proof = "?_" or fmed_proof = "NO" then 
               fmed_proof = ", no proof provided"
             Else
@@ -984,6 +1014,11 @@ Function autofill_editbox_from_MAXIS(HH_member_array, panel_read_from, variable_
             If fmed_type = "12" then fmed_type = "Medical Trans/Mileage Calc"
             If fmed_type = "15" then fmed_type = "Medi Part D premium"
             If fmed_type <> "__" then variable_written_to = variable_written_to & fmed_type & fmed_amt & fmed_proof & "; "
+			IF fmed_end_date <> "__ __" THEN					'<--- If there is a counted FMED expense with a future end date, the script will modify the way that end date is displayed.
+				fmed_end_date = datepart("M", fmed_end_date) & "/" & right(datepart("YYYY", fmed_end_date), 2)		'<--- Begins pulling apart fmed_end_date to format it to human speak.
+				IF left(fmed_end_date, 1) <> "0" THEN fmed_end_date = "0" & fmed_end_date
+				variable_written_to = left(variable_written_to, len(variable_written_to) - 2) & ", counted through " & fmed_end_date & "; "			'<--- Putting variable_written_to back together with FMED expense end date information.
+			END IF	
           End if
           fmed_row = fmed_row + 1
           If fmed_row = 15 then
@@ -2071,7 +2106,7 @@ function script_end_procedure(closing_message)
 		closing_message = replace(closing_message, "'", "")
 
 		'Opening DB
-		objConnection.Open "Provider = Microsoft.ACE.OLEDB.12.0; Data Source = C:\DHS-MAXIS-Scripts\Statistics\usage statistics.accdb"
+		objConnection.Open "Provider = Microsoft.ACE.OLEDB.12.0; Data Source = " & "" & stats_database_path & ""
 
 		'Opening usage_log and adding a record
 		objRecordSet.Open "INSERT INTO usage_log (USERNAME, SDATE, STIME, SCRIPT_NAME, SRUNTIME, CLOSING_MSGBOX)" &  _
@@ -2098,7 +2133,7 @@ function script_end_procedure_wsh(closing_message) 'For use when running a scrip
 		Set objRecordSet = CreateObject("ADODB.Recordset")
 
 		'Opening DB
-		objConnection.Open "Provider = Microsoft.ACE.OLEDB.12.0; Data Source = C:\DHS-MAXIS-Scripts\Statistics\usage statistics.accdb"
+		objConnection.Open "Provider = Microsoft.ACE.OLEDB.12.0; Data Source = " & "" & stats_database_path & ""
 
 		'Opening usage_log and adding a record
 		objRecordSet.Open "INSERT INTO usage_log (USERNAME, SDATE, STIME, SCRIPT_NAME, SRUNTIME, CLOSING_MSGBOX)" &  _
