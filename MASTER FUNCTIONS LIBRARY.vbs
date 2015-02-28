@@ -2248,9 +2248,9 @@ Function write_bullet_and_variable_in_case_note(bullet, variable)
 		End if
 	Loop until character_test = " "
 
-	'Looks at the length of the bullet. This determines the indent for the rest of the info. Going with a maximum indent of 30.
-	If len(bullet) >= 26 then
-		indent_length = 30	'It's four more than the bullet text to account for the asterisk, the colon, and the spaces.
+	'Looks at the length of the bullet. This determines the indent for the rest of the info. Going with a maximum indent of 18.
+	If len(bullet) >= 14 then
+		indent_length = 18	'It's four more than the bullet text to account for the asterisk, the colon, and the spaces.
 	Else
 		indent_length = len(bullet) + 4 'It's four more for the reason explained above.
 	End if
