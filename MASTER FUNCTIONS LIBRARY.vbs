@@ -659,8 +659,8 @@ Function autofill_editbox_from_MAXIS(HH_member_array, panel_read_from, variable_
       variable_written_to = support_coop & variable_written_to
     End if
   Elseif panel_read_from = "ACCI" then '----------------------------------------------------------------------------------------------------ACCI
-    For each HH_member in HH_member_array
-      call navigate_to_screen("stat", "ACCI")
+    call navigate_to_screen("stat", "ACCI")
+	For each HH_member in HH_member_array
       EMWriteScreen HH_member, 20, 76
       EMWriteScreen "01", 20, 79
       transmit
@@ -675,8 +675,8 @@ Function autofill_editbox_from_MAXIS(HH_member_array, panel_read_from, variable_
       End if
     Next
   Elseif panel_read_from = "ACCT" then '----------------------------------------------------------------------------------------------------ACCT
-    For each HH_member in HH_member_array
-      call navigate_to_screen("stat", "acct")
+    call navigate_to_screen("stat", "acct")
+	For each HH_member in HH_member_array
       EMWriteScreen HH_member, 20, 76
       EMWriteScreen "01", 20, 79
       transmit
@@ -720,8 +720,8 @@ Function autofill_editbox_from_MAXIS(HH_member_array, panel_read_from, variable_
     EMReadScreen BILS_amt, 1, 2, 78
     If BILS_amt <> 0 then variable_written_to = "BILS known to MAXIS."
   Elseif panel_read_from = "BUSI" then '----------------------------------------------------------------------------------------------------BUSI
-    For each HH_member in HH_member_array
-      call navigate_to_screen("stat", "busi")
+    call navigate_to_screen("stat", "busi")
+	For each HH_member in HH_member_array
       EMWriteScreen HH_member, 20, 76
       EMWriteScreen "01", 20, 79
       transmit
@@ -736,8 +736,8 @@ Function autofill_editbox_from_MAXIS(HH_member_array, panel_read_from, variable_
       End if
     Next
   Elseif panel_read_from = "CARS" then '----------------------------------------------------------------------------------------------------CARS
-    For each HH_member in HH_member_array
-      call navigate_to_screen("stat", "cars")
+    call navigate_to_screen("stat", "cars")
+	For each HH_member in HH_member_array
       EMWriteScreen HH_member, 20, 76
       EMWriteScreen "01", 20, 79
       transmit
@@ -752,8 +752,8 @@ Function autofill_editbox_from_MAXIS(HH_member_array, panel_read_from, variable_
       End if
     Next
   Elseif panel_read_from = "CASH" then '----------------------------------------------------------------------------------------------------CASH
-    For each HH_member in HH_member_array
-      call navigate_to_screen("stat", "cash")
+    call navigate_to_screen("stat", "cash")
+	For each HH_member in HH_member_array
       EMWriteScreen HH_member, 20, 76
       EMWriteScreen "01", 20, 79
       transmit
@@ -765,8 +765,8 @@ Function autofill_editbox_from_MAXIS(HH_member_array, panel_read_from, variable_
       End if
     Next
   Elseif panel_read_from = "COEX" then '----------------------------------------------------------------------------------------------------COEX
-    For each HH_member in HH_member_array
-      call navigate_to_screen("stat", "coex")
+    call navigate_to_screen("stat", "coex")
+	For each HH_member in HH_member_array
       EMWriteScreen HH_member, 20, 76
       EMWriteScreen "01", 20, 79
       transmit
@@ -820,8 +820,8 @@ Function autofill_editbox_from_MAXIS(HH_member_array, panel_read_from, variable_
       End if
     Next
   Elseif panel_read_from = "DCEX" then '----------------------------------------------------------------------------------------------------DCEX
-    For each HH_member in HH_member_array
-      call navigate_to_screen("stat", "dcex")
+    call navigate_to_screen("stat", "dcex")
+	For each HH_member in HH_member_array
       EMWriteScreen HH_member, 20, 76
       EMWriteScreen "01", 20, 79
       transmit
@@ -844,8 +844,8 @@ Function autofill_editbox_from_MAXIS(HH_member_array, panel_read_from, variable_
       Loop until DCEX_row = 17
     Next
   Elseif panel_read_from = "DIET" then '----------------------------------------------------------------------------------------------------DIET
-    For each HH_member in HH_member_array
-      call navigate_to_screen("stat", "diet")
+    call navigate_to_screen("stat", "diet")
+	For each HH_member in HH_member_array
       EMWriteScreen HH_member, 20, 76
       EMWriteScreen "01", 20, 79
       transmit
@@ -878,8 +878,8 @@ Function autofill_editbox_from_MAXIS(HH_member_array, panel_read_from, variable_
       End if
     Next
   Elseif panel_read_from = "DISA" then '----------------------------------------------------------------------------------------------------DISA
-    For each HH_member in HH_member_array
-      call navigate_to_screen("stat", "disa")
+    call navigate_to_screen("stat", "disa")
+	For each HH_member in HH_member_array
       EMWriteScreen HH_member, 20, 76
       EMWriteScreen "01", 20, 79
       transmit
@@ -925,8 +925,8 @@ Function autofill_editbox_from_MAXIS(HH_member_array, panel_read_from, variable_
     if right(EATS_info, 1) = "," then EATS_info = left(EATS_info, len(EATS_info) - 1)
     If EATS_info <> "" then variable_written_to = variable_written_to & ", p/p sep from memb(s) " & EATS_info & "."
   Elseif panel_read_from = "FACI" then '----------------------------------------------------------------------------------------------------FACI
-    For each HH_member in HH_member_array
-      call navigate_to_screen("stat", "faci")
+    call navigate_to_screen("stat", "faci")
+	For each HH_member in HH_member_array
       EMWriteScreen HH_member, 20, 76
       EMWriteScreen "01", 20, 79
       transmit
@@ -967,8 +967,8 @@ Function autofill_editbox_from_MAXIS(HH_member_array, panel_read_from, variable_
       End if
     Next
   Elseif panel_read_from = "FMED" then '----------------------------------------------------------------------------------------------------FMED
-    For each HH_member in HH_member_array
-      call navigate_to_screen("stat", "fmed")
+    call navigate_to_screen("stat", "fmed")
+	For each HH_member in HH_member_array
 	  ERRR_screen_check
       EMWriteScreen HH_member, 20, 76
       EMWriteScreen "01", 20, 79
@@ -1061,8 +1061,8 @@ Function autofill_editbox_from_MAXIS(HH_member_array, panel_read_from, variable_
       If phone_check <> "      " then variable_written_to = variable_written_to & "Phone.; "
     End if
   Elseif panel_read_from = "IMIG" then '----------------------------------------------------------------------------------------------------IMIG
-    For each HH_member in HH_member_array
-      call navigate_to_screen("stat", "IMIG")
+    call navigate_to_screen("stat", "IMIG")
+	For each HH_member in HH_member_array
       EMWriteScreen HH_member, 20, 76
       EMWriteScreen "01", 20, 79
       transmit
@@ -1094,8 +1094,8 @@ Function autofill_editbox_from_MAXIS(HH_member_array, panel_read_from, variable_
       variable_written_to = trim(variable_written_to) & "; "
     End if
   Elseif panel_read_from = "JOBS" then '----------------------------------------------------------------------------------------------------JOBS
-    For each HH_member in HH_member_array
-      call navigate_to_screen("stat", "jobs")
+	call navigate_to_screen("stat", "jobs")
+	For each HH_member in HH_member_array  
       EMWriteScreen HH_member, 20, 76
       EMWriteScreen "01", 20, 79
       transmit
@@ -1110,8 +1110,8 @@ Function autofill_editbox_from_MAXIS(HH_member_array, panel_read_from, variable_
       End if
     Next
   Elseif panel_read_from = "MEDI" then '----------------------------------------------------------------------------------------------------MEDI
-    For each HH_member in HH_member_array
-      call navigate_to_screen("stat", "MEDI")
+    call navigate_to_screen("stat", "MEDI")
+	For each HH_member in HH_member_array
       EMWriteScreen HH_member, 20, 76
       EMWriteScreen "01", 20, 79
       transmit
@@ -1119,8 +1119,8 @@ Function autofill_editbox_from_MAXIS(HH_member_array, panel_read_from, variable_
       If MEDI_amt <> "0" then variable_written_to = variable_written_to & "Medicare for member " & HH_member & ".; "
     Next
   Elseif panel_read_from = "MEMB" then '----------------------------------------------------------------------------------------------------MEMB
-    For each HH_member in HH_member_array
-      call navigate_to_screen("stat", "memb")
+    call navigate_to_screen("stat", "memb")
+	For each HH_member in HH_member_array
       EMWriteScreen HH_member, 20, 76
       transmit
       EMReadScreen rel_to_applicant, 2, 10, 42
@@ -1136,8 +1136,8 @@ Function autofill_editbox_from_MAXIS(HH_member_array, panel_read_from, variable_
     If number_of_children > 0 then variable_written_to = variable_written_to & ", " & number_of_children & "c"
     If left(variable_written_to, 1) = "," then variable_written_to = right(variable_written_to, len(variable_written_to) - 1)
   Elseif panel_read_from = "MEMI" then '----------------------------------------------------------------------------------------------------MEMI
-    For each HH_member in HH_member_array
-      call navigate_to_screen("stat", "memi")
+    call navigate_to_screen("stat", "memi")
+	For each HH_member in HH_member_array
       EMWriteScreen HH_member, 20, 76
       EMWriteScreen "01", 20, 79
       transmit
@@ -1162,8 +1162,8 @@ Function autofill_editbox_from_MAXIS(HH_member_array, panel_read_from, variable_
       variable_written_to = ""
     End if
   Elseif panel_read_from = "OTHR" then '----------------------------------------------------------------------------------------------------OTHR
-    For each HH_member in HH_member_array
-      call navigate_to_screen("stat", "othr")
+    call navigate_to_screen("stat", "othr")
+	For each HH_member in HH_member_array
       EMWriteScreen HH_member, 20, 76
       EMWriteScreen "01", 20, 79
       transmit
@@ -1178,8 +1178,8 @@ Function autofill_editbox_from_MAXIS(HH_member_array, panel_read_from, variable_
       End if
     Next
   Elseif panel_read_from = "PBEN" then '----------------------------------------------------------------------------------------------------PBEN
-    For each HH_member in HH_member_array
-      call navigate_to_screen("stat", "pben")
+    call navigate_to_screen("stat", "pben")
+	For each HH_member in HH_member_array
       EMWriteScreen HH_member, 20, 76
       transmit
       EMReadScreen panel_amt, 1, 2, 78
@@ -1202,8 +1202,8 @@ Function autofill_editbox_from_MAXIS(HH_member_array, panel_read_from, variable_
     Next
     If PBEN <> "" then variable_written_to = variable_written_to & PBEN
   Elseif panel_read_from = "PREG" then '----------------------------------------------------------------------------------------------------PREG
-    For each HH_member in HH_member_array
-      call navigate_to_screen("stat", "PREG")
+    call navigate_to_screen("stat", "PREG")
+	For each HH_member in HH_member_array
       EMWriteScreen HH_member, 20, 76
       EMWriteScreen "01", 20, 79
       transmit
@@ -1240,8 +1240,8 @@ Function autofill_editbox_from_MAXIS(HH_member_array, panel_read_from, variable_
       variable_written_to = ""
     End if
   Elseif panel_read_from = "RBIC" then '----------------------------------------------------------------------------------------------------RBIC
-    For each HH_member in HH_member_array
-      call navigate_to_screen("stat", "rbic")
+    call navigate_to_screen("stat", "rbic")
+	For each HH_member in HH_member_array
       EMWriteScreen HH_member, 20, 76
       EMWriteScreen "01", 20, 79
       transmit
@@ -1256,8 +1256,8 @@ Function autofill_editbox_from_MAXIS(HH_member_array, panel_read_from, variable_
       End if
     Next
   Elseif panel_read_from = "REST" then '----------------------------------------------------------------------------------------------------REST
-    For each HH_member in HH_member_array
-      call navigate_to_screen("stat", "rest")
+    call navigate_to_screen("stat", "rest")
+	For each HH_member in HH_member_array
       EMWriteScreen HH_member, 20, 76
       EMWriteScreen "01", 20, 79
       transmit
@@ -1281,8 +1281,8 @@ Function autofill_editbox_from_MAXIS(HH_member_array, panel_read_from, variable_
       variable_written_to = ""
     End if
   Elseif panel_read_from = "SCHL" then '----------------------------------------------------------------------------------------------------SCHL
-    For each HH_member in HH_member_array
-      call navigate_to_screen("stat", "schl")
+    call navigate_to_screen("stat", "schl")
+	For each HH_member in HH_member_array
       EMWriteScreen HH_member, 20, 76
       EMWriteScreen "01", 20, 79
       transmit
@@ -1307,8 +1307,8 @@ Function autofill_editbox_from_MAXIS(HH_member_array, panel_read_from, variable_
       End if
     Next
   Elseif panel_read_from = "SECU" then '----------------------------------------------------------------------------------------------------SECU
-    For each HH_member in HH_member_array
-      call navigate_to_screen("stat", "secu")
+    call navigate_to_screen("stat", "secu")
+	For each HH_member in HH_member_array
       EMWriteScreen HH_member, 20, 76
       EMWriteScreen "01", 20, 79
       transmit
@@ -1323,8 +1323,8 @@ Function autofill_editbox_from_MAXIS(HH_member_array, panel_read_from, variable_
       End if
     Next
   Elseif panel_read_from = "SHEL" then '----------------------------------------------------------------------------------------------------SHEL
-    For each HH_member in HH_member_array
-      call navigate_to_screen("stat", "shel")
+    call navigate_to_screen("stat", "shel")
+	For each HH_member in HH_member_array
       EMWriteScreen HH_member, 20, 76
       EMWriteScreen "01", 20, 79
       transmit
@@ -1351,8 +1351,8 @@ Function autofill_editbox_from_MAXIS(HH_member_array, panel_read_from, variable_
       SHEL_expense = ""
     Next
   Elseif panel_read_from = "STWK" then '----------------------------------------------------------------------------------------------------STWK
-    For each HH_member in HH_member_array
-      call navigate_to_screen("stat", "STWK")
+    call navigate_to_screen("stat", "STWK")
+	For each HH_member in HH_member_array
       EMWriteScreen HH_member, 20, 76
       EMWriteScreen "01", 20, 79
       transmit
@@ -1397,8 +1397,8 @@ Function autofill_editbox_from_MAXIS(HH_member_array, panel_read_from, variable_
       new_STWK_employer = "" 'clearing variable to prevent duplicates
     Next
   Elseif panel_read_from = "UNEA" then '----------------------------------------------------------------------------------------------------UNEA
-    For each HH_member in HH_member_array
-      call navigate_to_screen("stat", "unea")
+    call navigate_to_screen("stat", "unea")
+	For each HH_member in HH_member_array
       EMWriteScreen HH_member, 20, 76
       EMWriteScreen "01", 20, 79
       transmit
@@ -1413,8 +1413,8 @@ Function autofill_editbox_from_MAXIS(HH_member_array, panel_read_from, variable_
       End if
     Next
   Elseif panel_read_from = "WREG" then '---------------------------------------------------------------------------------------------------WREG
-    For each HH_member in HH_member_array
-	call navigate_to_screen("stat", "wreg")
+    call navigate_to_screen("stat", "wreg")
+	For each HH_member in HH_member_array
       EMWriteScreen HH_member, 20, 76
       EMWriteScreen "01", 20, 79
       transmit
