@@ -1815,7 +1815,7 @@ Function MMIS_RKEY_finder
   EMWaitReady 0, 0
 End function
 
-function navigate_to_screen(x, y)
+Function navigate_to_MAXIS_screen(x, y)
   EMSendKey "<enter>"
   EMWaitReady 0, 0
   EMReadScreen MAXIS_check, 5, 1, 39
@@ -2319,21 +2319,6 @@ Function write_bullet_and_variable_in_CASE_NOTE(bullet, variable)
 
 End function
 
-'-----------DEPRECIATED AS OF 01/20/2015. LEFT IN HERE FOR COMPATIBILITY PURPOSES.
-Function write_editbox_in_case_note(bullet, variable, length_of_indent) 'length_of_indent is depreciated
-	call write_bullet_and_variable_in_case_note(bullet, variable)
-End function
-
-'-----------DEPRECIATED AS OF 01/20/2015. LEFT IN HERE FOR COMPATIBILITY PURPOSES.
-Function write_new_line_in_case_note(variable)
-	call write_variable_in_CASE_NOTE(variable)
-End function
-
-'-----------DEPRECIATED AS OF 01/20/2015. LEFT IN HERE FOR COMPATIBILITY PURPOSES.
-Function write_new_line_in_SPEC_MEMO(variable_to_enter)
-	call write_variable_in_SPEC_MEMO(variable_to_enter)
-End function
-
 Function write_three_columns_in_CASE_NOTE(col_01_start_point, col_01_variable, col_02_start_point, col_02_variable, col_03_start_point, col_03_variable)
   EMGetCursor row, col 
   If (row = 17 and col + (len(x)) >= 80 + 1 ) or (row = 4 and col = 3) then
@@ -2356,11 +2341,6 @@ Function write_three_columns_in_CASE_NOTE(col_01_start_point, col_01_variable, c
     EMWaitReady 0, 0
   End if
 End function
-
-'-----------DEPRECIATED AS OF 01/20/2015. LEFT IN HERE FOR COMPATIBILITY PURPOSES.
-FUNCTION write_TIKL_function(variable)
-	call write_variable_in_TIKL(variable)
-END FUNCTION
 
 Function write_variable_in_CASE_NOTE(variable)
 
@@ -2531,6 +2511,27 @@ Function write_variable_in_TIKL(variable)
 	IF tikl_line_five <> "" THEN EMWriteScreen tikl_line_five, 13, 3
 	transmit
 End function
+
+'--------DEPRECIATED FUNCTIONS KEPT FOR COMPATIBILITY PURPOSES, THE NEW FUNCTIONS ARE INDICATED WITHIN THE OLD FUNCTIONS
+Function navigate_to_screen(x, y)										'DEPRECIATED AS OF 03/09/2015.
+	call navigate_to_MAXIS_screen(x, y)
+End function
+
+Function write_editbox_in_case_note(bullet, variable, length_of_indent) 'DEPRECIATED AS OF 01/20/2015. 
+	call write_bullet_and_variable_in_case_note(bullet, variable)
+End function
+
+Function write_new_line_in_case_note(variable)							'DEPRECIATED AS OF 01/20/2015. 
+	call write_variable_in_CASE_NOTE(variable)
+End function
+
+Function write_new_line_in_SPEC_MEMO(variable_to_enter)					'DEPRECIATED AS OF 01/20/2015. 
+	call write_variable_in_SPEC_MEMO(variable_to_enter)
+End function
+
+FUNCTION write_TIKL_function(variable)									'DEPRECIATED AS OF 01/20/2015.
+	call write_variable_in_TIKL(variable)
+END FUNCTION
 
 '<<<<<<<<<<<<THESE VARIABLES ARE TEMPORARY, DESIGNED TO KEEP CERTAIN COUNTIES FROM ACCIDENTALLY JOINING THE BETA, DUE TO A GLITCH IN THE INSTALLER WHICH WAS CORRECTED IN VERSION 1.3.1
 If beta_agency = True then 
