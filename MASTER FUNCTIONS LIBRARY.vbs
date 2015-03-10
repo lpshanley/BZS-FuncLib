@@ -2218,7 +2218,7 @@ Function worker_county_code_determination(worker_county_code_variable, two_digit
 	End if
 End function
 
-Function write_bullet_and_variable_in_case_note(bullet, variable)
+Function write_bullet_and_variable_in_CASE_NOTE(bullet, variable)
 
 	EMGetCursor noting_row, noting_col						'Needs to get the row and col to start. Doesn't need to get it in the array function because that uses EMWriteScreen.
 	noting_col = 3											'The noting col should always be 3 at this point, because it's the beginning. But, this will be dynamically recreated each time.
@@ -2334,7 +2334,7 @@ Function write_new_line_in_SPEC_MEMO(variable_to_enter)
 	call write_variable_in_SPEC_MEMO(variable_to_enter)
 End function
 
-Function write_three_columns_in_case_note(col_01_start_point, col_01_variable, col_02_start_point, col_02_variable, col_03_start_point, col_03_variable)
+Function write_three_columns_in_CASE_NOTE(col_01_start_point, col_01_variable, col_02_start_point, col_02_variable, col_03_start_point, col_03_variable)
   EMGetCursor row, col 
   If (row = 17 and col + (len(x)) >= 80 + 1 ) or (row = 4 and col = 3) then
     EMSendKey "<PF8>"
