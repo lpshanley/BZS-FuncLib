@@ -2322,7 +2322,7 @@ End function
 Function write_bullet_and_variable_in_CCOL_NOTE(bullet, variable)
 
 	EMGetCursor noting_row, noting_col						'Needs to get the row and col to start. Doesn't need to get it in the array function because that uses EMWriteScreen.
-	noting_col = 5											'The noting col should always be 5 at this point, because it's the beginning. But, this will be dynamically recreated each time.
+	noting_col = 3											'The noting col should always be 3 at this point, because it's the beginning. But, this will be dynamically recreated each time.
 	'The following figures out if we need a new page, or if we need a new case note entirely as well.
 	Do
 		EMReadScreen character_test, 1, noting_row, noting_col 	'Reads a single character at the noting row/col. If there's a character there, it needs to go down a row, and look again until there's nothing. It also needs to trigger these events if it's at or above row 18 (which means we're beyond case note range).
