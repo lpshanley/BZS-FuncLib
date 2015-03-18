@@ -2038,8 +2038,33 @@ Function PF12
   EMWaitReady 0, 0
 End function
 
-Function PF19
-  EMSendKey "<PF19>"
+Function PF13
+  EMSendKey "<PF13>"
+  EMWaitReady 0, 0
+End function
+
+Function PF14
+  EMSendKey "<PF14>"
+  EMWaitReady 0, 0
+End function
+
+Function PF15
+  EMSendKey "<PF15>"
+  EMWaitReady 0, 0
+End function
+
+Function PF16
+  EMSendKey "<PF16>"
+  EMWaitReady 0, 0
+End function
+
+Function PF17
+  EMSendKey "<PF17>"
+  EMWaitReady 0, 0
+End function
+
+Function PF18
+  EMSendKey "<PF18>"
   EMWaitReady 0, 0
 End function
 
