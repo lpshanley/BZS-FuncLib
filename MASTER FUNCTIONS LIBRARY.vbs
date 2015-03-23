@@ -1783,7 +1783,7 @@ Function MMIS_RKEY_finder
   EMWaitReady 0, 0
 End function
 
-Function navigate_to_MAXIS_screen(x, y)
+Function navigate_to_MAXIS_screen(function_to_go_to, command_to_go_to)
   EMSendKey "<enter>"
   EMWaitReady 0, 0
   EMReadScreen MAXIS_check, 5, 1, 39
@@ -1801,11 +1801,11 @@ Function navigate_to_MAXIS_screen(x, y)
       current_case_number = replace(current_case_number, "_", "")
       current_case_number = trim(current_case_number)
     End if
-    If current_case_number = case_number and MAXIS_function = ucase(x) and STAT_note_check <> "NOTE" then 
+    If current_case_number = case_number and MAXIS_function = ucase(function_to_go_to) and STAT_note_check <> "NOTE" then 
       row = 1
       col = 1
       EMSearch "Command: ", row, col
-      EMWriteScreen y, row, col + 9
+      EMWriteScreen command_to_go_to, row, col + 9
       EMSendKey "<enter>"
       EMWaitReady 0, 0
     Else
@@ -1814,12 +1814,12 @@ Function navigate_to_MAXIS_screen(x, y)
         EMWaitReady 0, 0
         EMReadScreen SELF_check, 4, 2, 50
       Loop until SELF_check = "SELF"
-      EMWriteScreen x, 16, 43
+      EMWriteScreen function_to_go_to, 16, 43
       EMWriteScreen "________", 18, 43
       EMWriteScreen case_number, 18, 43
       EMWriteScreen footer_month, 20, 43
       EMWriteScreen footer_year, 20, 46
-      EMWriteScreen y, 21, 70
+      EMWriteScreen command_to_go_to, 21, 70
       EMSendKey "<enter>"
       EMWaitReady 0, 0
       EMReadScreen abended_check, 7, 9, 27
