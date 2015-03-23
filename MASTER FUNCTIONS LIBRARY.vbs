@@ -1785,6 +1785,7 @@ Function MMIS_RKEY_finder
 End function
 
 Function navigate_to_MAXIS_screen(function_to_go_to, command_to_go_to)
+  MsgBox case_number
   EMSendKey "<enter>"
   EMWaitReady 0, 0
   EMReadScreen MAXIS_check, 5, 1, 39
