@@ -38,6 +38,7 @@
 
 'GLOBAL CONSTANTS----------------------------------------------------------------------------------------------------
 Dim checked, unchecked, cancel, OK		'Declares this for Option Explicit users
+Public case_number						'This variable should be a public variable accessible to all functions
 
 checked = 1			'Value for checked boxes
 unchecked = 0		'Value for unchecked boxes
