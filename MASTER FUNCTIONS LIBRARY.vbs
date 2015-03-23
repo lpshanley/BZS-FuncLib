@@ -38,7 +38,6 @@
 
 'GLOBAL CONSTANTS----------------------------------------------------------------------------------------------------
 Dim checked, unchecked, cancel, OK		'Declares this for Option Explicit users
-Public case_number						'This variable should be a public variable accessible to all functions
 
 checked = 1			'Value for checked boxes
 unchecked = 0		'Value for unchecked boxes
@@ -1785,7 +1784,6 @@ Function MMIS_RKEY_finder
 End function
 
 Function navigate_to_MAXIS_screen(function_to_go_to, command_to_go_to)
-  MsgBox case_number
   EMSendKey "<enter>"
   EMWaitReady 0, 0
   EMReadScreen MAXIS_check, 5, 1, 39
@@ -1818,7 +1816,6 @@ Function navigate_to_MAXIS_screen(function_to_go_to, command_to_go_to)
       Loop until SELF_check = "SELF"
       EMWriteScreen function_to_go_to, 16, 43
       EMWriteScreen "________", 18, 43
-      MsgBox case_number
       EMWriteScreen case_number, 18, 43
       EMWriteScreen footer_month, 20, 43
       EMWriteScreen footer_year, 20, 46
