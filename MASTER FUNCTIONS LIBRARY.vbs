@@ -1816,6 +1816,7 @@ Function navigate_to_MAXIS_screen(function_to_go_to, command_to_go_to)
       Loop until SELF_check = "SELF"
       EMWriteScreen function_to_go_to, 16, 43
       EMWriteScreen "________", 18, 43
+      MsgBox case_number
       EMWriteScreen case_number, 18, 43
       EMWriteScreen footer_month, 20, 43
       EMWriteScreen footer_year, 20, 46
